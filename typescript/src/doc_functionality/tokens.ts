@@ -477,26 +477,106 @@ export function hasTokenValueReference(tokenValue: any): boolean {
   return !!(tokenValue.referencedTokenId && tokenValue.referencedToken)
 }
 
-/** Get token reference for specific token value types */
+/** Get token reference for specific token value types with full path */
 export function getColorTokenReference(colorValue: ColorTokenValue): string | null {
   if (colorValue.referencedTokenId && colorValue.referencedToken) {
-    return colorValue.referencedToken.name
+    return getFullTokenPath(colorValue.referencedToken)
   }
   return null
 }
 
 export function getMeasureTokenReference(measureValue: MeasureTokenValue): string | null {
   if (measureValue.referencedTokenId && measureValue.referencedToken) {
-    return measureValue.referencedToken.name
+    return getFullTokenPath(measureValue.referencedToken)
   }
   return null
 }
 
 export function getTextTokenReference(textValue: TextTokenValue): string | null {
   if (textValue.referencedTokenId && textValue.referencedToken) {
-    return textValue.referencedToken.name
+    return getFullTokenPath(textValue.referencedToken)
   }
   return null
+}
+
+/** Get the full path of a token including its group hierarchy */
+export function getFullTokenPath(token: Token): string {
+  // Try to extract group information from token name if it contains slashes
+  // Many design systems use naming conventions like "general/surface" or "colors/primary/500"
+  if (token.name.includes('/')) {
+    return token.name
+  }
+  
+  // Try to get group information from token ID or other properties
+  // Token IDs often contain group information
+  if (token.id && token.id.includes('.')) {
+    // Convert dot notation to slash notation (e.g., "general.surface" -> "general/surface")
+    const pathFromId = token.id.replace(/\./g, '/')
+    // If the token name is at the end of the ID path, return the full path
+    if (pathFromId.endsWith(token.name)) {
+      return pathFromId
+    }
+  }
+  
+  // Fallback: return just the token name
+  return token.name
+}
+
+/** Enhanced function to get token reference with group context from design system */
+export function getTokenReferenceWithContext(tokenValue: any, ds?: any): string | null {
+  if (!tokenValue.referencedTokenId || !tokenValue.referencedToken) {
+    return null
+  }
+  
+  const referencedToken = tokenValue.referencedToken
+  
+  // If we have access to the design system, try to get the full context
+  if (ds && ds.tokenGroups) {
+    const tokenGroup = findTokenGroup(referencedToken.id, ds.tokenGroups())
+    if (tokenGroup) {
+      const groupPath = getTokenGroupFullPath(tokenGroup)
+      return groupPath ? `${groupPath}/${referencedToken.name}` : referencedToken.name
+    }
+  }
+  
+  // Fallback to the basic path extraction
+  return getFullTokenPath(referencedToken)
+}
+
+/** Find the token group that contains a specific token */
+function findTokenGroup(tokenId: string, tokenGroups: TokenGroup[]): TokenGroup | null {
+  for (const group of tokenGroups) {
+    // Check if token is in current group
+    if (group.childrenIds && group.childrenIds.includes(tokenId)) {
+      return group
+    }
+    
+    // Recursively check subgroups
+    if (group.subgroups && group.subgroups.length > 0) {
+      const found = findTokenGroup(tokenId, group.subgroups)
+      if (found) {
+        return found
+      }
+    }
+  }
+  return null
+}
+
+/** Get the full path of a token group including parent hierarchy */
+function getTokenGroupFullPath(tokenGroup: TokenGroup): string {
+  const pathParts: string[] = []
+  
+  // Add parent path if exists
+  if (tokenGroup.path && tokenGroup.path.length > 0) {
+    pathParts.push(...tokenGroup.path)
+  }
+  
+  // Add current group name if not root
+  if (!tokenGroup.isRoot && tokenGroup.name) {
+    pathParts.push(tokenGroup.name)
+  }
+  
+  return pathParts.join('/')
 }
 
 /** Main function to display any token with its resolved value and optional reference */
