@@ -2,6 +2,10 @@
 {[ const block = context.block /]}
 
 {[ if token ]}
+{* TEST - This should show in table variant *}
+<div style="background: blue; color: white; padding: 2px; margin: 2px; font-size: 0.7em;">
+    🔵 TABLE VARIANT WORKING - {{ token.name }}
+</div>
 <div class="item">
     <div class="basic-info">
         {[ if (block.swatches) ]}
