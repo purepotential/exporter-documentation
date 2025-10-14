@@ -46,13 +46,22 @@
                     {[ for swatch in block.swatches ]}
                         {[ const themedToken = ds.tokensByApplyingThemes([token.id], swatch.selectedThemeIds) /]}
                         {[ const themes = ds.themesByIds(swatch.selectedThemeIds) /]}
-                        {[ const themeNames = themes.map(theme => theme.name).join(", ") /]}
+                        
+                        {* Build theme names manually since .map() and .join() aren't supported *}
+                        {[ let themeLabel = "" /]}
+                        {[ for theme in themes ]}
+                            {[ if themeLabel !== "" ]}
+                                {[ themeLabel = themeLabel + ", " + theme.name /]}
+                            {[ else ]}
+                                {[ themeLabel = theme.name /]}
+                            {[/]}
+                        {[/]}
                         
                         {[ if token.tokenType.equals("Color") ]}
                             {[ const colorRef = getColorTokenReference(themedToken[0].value, ds) /]}
                             {[ if colorRef ]}
                                 <div class="reference-value">
-                                    <span class="theme-label">{{ themeNames }}:</span> {{ colorRef }}
+                                    <span class="theme-label">{{ themeLabel }}:</span> {{ colorRef }}
                                 </div>
                             {[/]}
                         {[/]}
@@ -60,7 +69,7 @@
                             {[ const measureRef = getMeasureTokenReference(themedToken[0].value, ds) /]}
                             {[ if measureRef ]}
                                 <div class="reference-value">
-                                    <span class="theme-label">{{ themeNames }}:</span> {{ measureRef }}
+                                    <span class="theme-label">{{ themeLabel }}:</span> {{ measureRef }}
                                 </div>
                             {[/]}
                         {[/]}
@@ -68,7 +77,7 @@
                             {[ const textRef = getTextTokenReference(themedToken[0].value, ds) /]}
                             {[ if textRef ]}
                                 <div class="reference-value">
-                                    <span class="theme-label">{{ themeNames }}:</span> {{ textRef }}
+                                    <span class="theme-label">{{ themeLabel }}:</span> {{ textRef }}
                                 </div>
                             {[/]}
                         {[/]}
