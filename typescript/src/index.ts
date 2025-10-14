@@ -64,7 +64,18 @@ import {
   extendFontFamily,
   normalizeFontSizeCSS,
   convertTextDecorationToCSS,
-  convertTextCaseToTextTransform
+  convertTextCaseToTextTransform,
+  // Token reference functions
+  getColorTokenReference,
+  getMeasureTokenReference,
+  getTextTokenReference,
+  displayTokenWithReference,
+  hasTokenValueReference,
+  getComplexTokenReferences,
+  formatReferenceList,
+  createSimpleTokenReference,
+  createDetailedTokenReference,
+  generateEnhancedTokenDescription
 } from './doc_functionality/tokens';
 import {
   assetUrl,
@@ -223,6 +234,18 @@ Pulsar.registerFunction(
   'convertTextCaseToTextTransform',
   convertTextCaseToTextTransform
 );
+
+/* Token reference functions */
+Pulsar.registerFunction('getColorTokenReference', getColorTokenReference);
+Pulsar.registerFunction('getMeasureTokenReference', getMeasureTokenReference);
+Pulsar.registerFunction('getTextTokenReference', getTextTokenReference);
+Pulsar.registerFunction('displayTokenWithReference', displayTokenWithReference);
+Pulsar.registerFunction('hasTokenValueReference', hasTokenValueReference);
+Pulsar.registerFunction('getComplexTokenReferences', getComplexTokenReferences);
+Pulsar.registerFunction('formatReferenceList', formatReferenceList);
+Pulsar.registerFunction('createSimpleTokenReference', createSimpleTokenReference);
+Pulsar.registerFunction('createDetailedTokenReference', createDetailedTokenReference);
+Pulsar.registerFunction('generateEnhancedTokenDescription', generateEnhancedTokenDescription);
 
 /* Markdown */
 Pulsar.registerFunction('markdownToHTML', markdownToHTML);

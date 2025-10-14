@@ -638,3 +638,46 @@ export function formatReferenceList(references: string[]): string {
   const formattedRefs = references.map(ref => `<li>${ref}</li>`).join("")
   return `<span class="token-references"><ul>${formattedRefs}</ul></span>`
 }
+
+/** Generate enhanced description with resolved value and reference info */
+export function generateEnhancedTokenDescription(token: Token): string {
+  const resolvedValue = displayTokenWithReference(token, { showReference: false })
+  const hasRef = hasTokenValueReference((token as any).value)
+  
+  let description = token.description || ""
+  
+  // Add resolved value info
+  const valueInfo = `Resolved value: ${resolvedValue}`
+  
+  // Add reference info
+  let referenceInfo = ""
+  if (hasRef) {
+    switch (token.tokenType) {
+      case "Color":
+        const colorRef = getColorTokenReference((token as ColorToken).value)
+        referenceInfo = colorRef ? ` | References: ${colorRef}` : ""
+        break
+      case "Typography":
+        const complexRefs = getComplexTokenReferences(token)
+        referenceInfo = complexRefs.length > 0 ? ` | References: ${complexRefs.join(", ")}` : ""
+        break
+      default:
+        if (isDimensionToken(token.tokenType)) {
+          const measureRef = getMeasureTokenReference((token as MeasureToken).value)
+          referenceInfo = measureRef ? ` | References: ${measureRef}` : ""
+        } else if (isStringToken(token.tokenType)) {
+          const textRef = getTextTokenReference((token as TextToken).value)
+          referenceInfo = textRef ? ` | References: ${textRef}` : ""
+        }
+    }
+  }
+  
+  // Combine description with value and reference info
+  const enhancedInfo = `${valueInfo}${referenceInfo}`
+  
+  if (description) {
+    return `${description} | ${enhancedInfo}`
+  } else {
+    return enhancedInfo
+  }
+}

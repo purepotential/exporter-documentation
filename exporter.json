@@ -20,7 +20,13 @@
   "routing": "2",
   "tokensModel": "2",
   "type": "documentation",
-  "tags": ["Documentation", "Template", "Docs", "Reference site", "Styleguide"],
+  "tags": [
+    "Documentation",
+    "Template",
+    "Docs",
+    "Reference site",
+    "Styleguide"
+  ],
   "contributes": {
     "configuration": [
       {
@@ -142,7 +148,10 @@
         "label": "Color style",
         "description": "The overall color style used for the top navigation throughout your published documentation.",
         "category": "Top navigation",
-        "values": ["Light", "Dark"],
+        "values": [
+          "Light",
+          "Dark"
+        ],
         "default": "Dark"
       },
       {
@@ -166,7 +175,10 @@
         "label": "Search button type",
         "description": "The type of the search button in top navigation.",
         "category": "Top navigation",
-        "values": ["Only icon", "Icon + label"],
+        "values": [
+          "Only icon",
+          "Icon + label"
+        ],
         "default": "Only icon"
       },
       {
@@ -227,7 +239,10 @@
         "label": "Color style",
         "description": "The overall color style used for the side navigation throughout your published documentation.",
         "category": "Side navigation",
-        "values": ["Light", "Dark"],
+        "values": [
+          "Light",
+          "Dark"
+        ],
         "default": "Light"
       },
       {
@@ -299,7 +314,10 @@
         "label": "Page header style",
         "description": "The visual style of the header in your documentation. Choose between Default (edge to edge) and Boxed (with space surrounding the header).",
         "category": "Pages",
-        "values": ["Default", "Boxed"],
+        "values": [
+          "Default",
+          "Boxed"
+        ],
         "default": "Default"
       },
       {
@@ -361,7 +379,10 @@
         "label": "Asset block: Figma actions",
         "description": "Select which actions should be available for each asset in the list. Visible only in published documentation.",
         "category": "Blocks",
-        "values": ["None", "Open in Figma"],
+        "values": [
+          "None",
+          "Open in Figma"
+        ],
         "default": "None"
       },
       {
@@ -757,6 +778,112 @@
             "type": "boolean",
             "default": true,
             "label": "Date of update"
+          }
+        ]
+      },
+      {
+        "key": "io.supernova.documentation-main.token-preview",
+        "category": "Tokens",
+        "title": "Token Preview with References",
+        "description": "Display token with resolved value and reference information",
+        "icon": "icons/custom-block-token-preview.png",
+        "mode": "block",
+        "properties": [
+          {
+            "key": "tokenId",
+            "type": "token",
+            "label": "Token"
+          },
+          {
+            "key": "showReferences",
+            "type": "boolean",
+            "default": true,
+            "label": "Show token references"
+          },
+          {
+            "key": "showResolvedValue",
+            "type": "boolean",
+            "default": true,
+            "label": "Show resolved value"
+          },
+          {
+            "key": "displayStyle",
+            "type": "enum",
+            "values": ["Inline", "Detailed", "Card"],
+            "default": "Inline",
+            "label": "Display style"
+          }
+        ]
+      },
+      {
+        "key": "io.supernova.documentation-main.token-list-with-references",
+        "category": "Tokens",
+        "title": "Token List with References",
+        "description": "Display multiple tokens with resolved values, references, and previews",
+        "icon": "icons/custom-block-token-list.png",
+        "mode": "block",
+        "properties": [
+          {
+            "key": "tokenIds",
+            "type": "tokenList",
+            "label": "Tokens"
+          },
+          {
+            "key": "tokenGroupId",
+            "type": "tokenGroup",
+            "label": "Token Group (alternative to individual tokens)"
+          },
+          {
+            "key": "showReferences",
+            "type": "boolean",
+            "default": true,
+            "label": "Show token references"
+          },
+          {
+            "key": "showResolvedValues",
+            "type": "boolean",
+            "default": true,
+            "label": "Show resolved values"
+          },
+          {
+            "key": "showPreviews",
+            "type": "boolean",
+            "default": true,
+            "label": "Show token previews"
+          },
+          {
+            "key": "showDescriptions",
+            "type": "boolean",
+            "default": true,
+            "label": "Show token descriptions"
+          },
+          {
+            "key": "displayVariant",
+            "type": "enum",
+            "values": ["Table", "Grid-4", "Grid-3", "Grid-2", "Grid-1", "Stack"],
+            "default": "Table",
+            "label": "Display variant"
+          },
+          {
+            "key": "referenceStyle",
+            "type": "enum",
+            "values": ["Simple", "Detailed", "Full path"],
+            "default": "Simple",
+            "label": "Reference display style"
+          },
+          {
+            "key": "sortBy",
+            "type": "enum",
+            "values": ["Name", "Type", "Value", "Reference"],
+            "default": "Name",
+            "label": "Sort tokens by"
+          },
+          {
+            "key": "filterByType",
+            "type": "enum",
+            "values": ["All", "Color", "Typography", "Dimension", "String", "Shadow", "Gradient"],
+            "default": "All",
+            "label": "Filter by token type"
           }
         ]
       }

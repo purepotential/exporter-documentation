@@ -1,33 +1,10 @@
 {[ let token = context /]}
 {[ const configuration = exportConfiguration() /]}
 {[ const showReferences = configuration.blockConfigTokensShowReferences /]}
-{[ const referenceStyle = configuration.blockConfigTokensReferenceStyle /]}
 
-{* SIMPLE TEST - This should always show *}
-<div style="background: red; color: white; padding: 4px; margin: 4px 0; font-weight: bold;">
-    🔴 TOKEN TEMPLATE IS WORKING - {{ token.name }} ({{ token.tokenType }})
-</div>
-
-{* Debug: Show configuration status *}
-<div class="token-reference-status" style="background: {{ showReferences ? '#e8f5e8' : '#f5e8e8' }}; padding: 4px 8px; font-size: 0.8em; margin-bottom: 8px; border-radius: 4px;">
-    {{ showReferences ? '✓ References enabled' : '✗ References disabled' }} ({{ referenceStyle }})
-</div>
-
-<div class="token-value-container">
-    <span class="token-value">
-    {[ if token.tokenType.equals("Color") ]}
-        {[ const resolvedColor = getFormattedColor(token.value, false, null, false) /]}
-        {[ const colorRef = getColorTokenReference(token.value) /]}
-        {{ resolvedColor }}
-        {[ if (showReferences && colorRef) ]}
-            <span class="token-reference"> → {{ colorRef }}</span>
-        {[/]}
-        {[ if showReferences ]}
-            <div class="token-reference-info">
-                <strong>Resolved:</strong> {{ resolvedColor }}<br>
-                <strong>Reference:</strong> {{ colorRef || "No reference" }}
-            </div>
-        {[/]}
+<span class="token-value">
+{[ if token.tokenType.equals("Color") ]}
+    {{getFormattedColor(token.value, false, null, showReferences)}}
 {[ elseif token.tokenType.equals("Blur") ]}
     {[ switch token.value.type ]}
         {[ case "Background" ]}
@@ -68,48 +45,6 @@
 {[ elseif isOptionsToken(token.tokenType)]}
     {{ token.value.value }}
 {[ elseif (isDimensionToken(token.tokenType))]}
-        {[ const resolvedMeasure = measureValueToReadableUnit(token.value, false) /]}
-        {[ const measureRef = getMeasureTokenReference(token.value) /]}
-        {{ resolvedMeasure }}
-        {[ if (showReferences && measureRef) ]}
-            <span class="token-reference"> → {{ measureRef }}</span>
-        {[/]}
-        {[ if showReferences ]}
-            <div class="token-reference-info">
-                <strong>Resolved:</strong> {{ resolvedMeasure }}<br>
-                <strong>Reference:</strong> {{ measureRef || "No reference" }}
-            </div>
-        {[/]}
-    {[/]}
-    </span>
-</div>
-
-{[ if showReferences ]}
-    <div class="token-reference-debug" style="background: #f0f0f0; padding: 4px; margin: 4px 0; font-size: 0.7em; border-radius: 3px;">
-        <strong>Debug Info:</strong><br>
-        • Token Name: {{ token.name }}<br>
-        • Token Type: {{ token.tokenType }}<br>
-        • Show References: {{ showReferences }}<br>
-        {[ if token.tokenType.equals("Color") ]}
-            • Color Value: {{ getFormattedColor(token.value, false, null, false) }}<br>
-            • Referenced Token ID: {{ token.value.referencedTokenId || "none" }}<br>
-            • Referenced Token Name: {{ getColorTokenReference(token.value) || "none" }}<br>
-            • Has Reference: {{ hasTokenValueReference(token.value) }}<br>
-        {[ elseif (isDimensionToken(token.tokenType)) ]}
-            • Measure Value: {{ measureValueToReadableUnit(token.value, false) }}<br>
-            • Referenced Token ID: {{ token.value.referencedTokenId || "none" }}<br>
-            • Referenced Token Name: {{ getMeasureTokenReference(token.value) || "none" }}<br>
-            • Has Reference: {{ hasTokenValueReference(token.value) }}<br>
-        {[/]}
-        • Reference Style: {{ referenceStyle }}<br>
-    </div>
+    {{ measureValueToReadableUnit(token.value, showReferences) }}
 {[/]}
-
-{[ if (showReferences && referenceStyle.equals("Detailed list for complex tokens")) ]}
-    {[ const complexRefs = getComplexTokenReferences(token) /]}
-    {[ if (complexRefs.length > 0) ]}
-        <div class="token-complex-references">
-            {{ formatReferenceList(complexRefs) }}
-        </div>
-    {[/]}
-{[/]}
+</span>
