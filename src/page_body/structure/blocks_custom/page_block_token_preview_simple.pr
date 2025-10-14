@@ -1,0 +1,25 @@
+{* Simple Token Preview Block *}
+{[ const block = context /]}
+
+{[ if block.tokenId && block.tokenId.trim() !== "" ]}
+    {[ const token = ds.tokenById(block.tokenId.trim()) /]}
+    
+    {[ if token ]}
+        <div class="simple-token-preview">
+            <h4>{{ token.name }}</h4>
+            <p>Type: {{ token.tokenType }}</p>
+            <p>Value: {[ inject "page_block_token_value" context token /]}</p>
+            {[ if token.description ]}
+                <p>Description: {{ token.description }}</p>
+            {[/]}
+        </div>
+    {[ else ]}
+        <div class="token-error">
+            <p>Token not found: {{ block.tokenId }}</p>
+        </div>
+    {[/]}
+{[ else ]}
+    <div class="token-placeholder">
+        <p>Enter a token ID to preview</p>
+    </div>
+{[/]}

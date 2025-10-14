@@ -1,297 +1,116 @@
-{* Custom Token List with References Block *}
+{* Token List with References Block *}
 {[ const block = context /]}
 {[ const configuration = exportConfiguration() /]}
 
-{* Get tokens from either tokenIds or tokenGroupId *}
+{* Get tokens from tokenIds *}
 {[ let tokens = [] /]}
 {[ if block.tokenIds && block.tokenIds.trim() !== "" ]}
     {[ tokens = getTokensFromIds(block.tokenIds, ds) /]}
-{[ elseif block.tokenGroupId && block.tokenGroupId.trim() !== "" ]}
-    {[ tokens = ds.tokensByGroupId(block.tokenGroupId.trim()) /]}
 {[/]}
 
 {* Configuration *}
 {[ const showReferences = block.showReferences !== undefined ? block.showReferences : true /]}
-{[ const showResolvedValues = block.showResolvedValues !== undefined ? block.showResolvedValues : true /]}
-{[ const showPreviews = block.showPreviews !== undefined ? block.showPreviews : true /]}
-{[ const showDescriptions = block.showDescriptions !== undefined ? block.showDescriptions : true /]}
 {[ const displayVariant = block.displayVariant || "Table" /]}
-{[ const referenceStyle = block.referenceStyle || "Simple" /]}
-{[ const sortBy = block.sortBy || "Name" /]}
-{[ const filterByType = block.filterByType || "All" /]}
-
-{* Filter tokens by type if specified *}
-{[ if filterByType !== "All" ]}
-    {[ let filteredTokens = [] /]}
-    {[ for token in tokens ]}
-        {[ if token.tokenType.equals(filterByType) ]}
-            {[ filteredTokens.push(token) /]}
-        {[/]}
-    {[/]}
-    {[ tokens = filteredTokens /]}
-{[/]}
-
-{* Sort tokens *}
-{[ if sortBy.equals("Name") ]}
-    {[ tokens = tokens.sort((a, b) => a.name.localeCompare(b.name)) /]}
-{[ elseif sortBy.equals("Type") ]}
-    {[ tokens = tokens.sort((a, b) => a.tokenType.localeCompare(b.tokenType)) /]}
-{[/]}
 
 {[ if tokens.length > 0 ]}
-    <div class="custom-token-list-with-references" data-variant="{{ displayVariant.toLowerCase() }}">
+    <div class="custom-token-list-with-references">
         
-        {* Header with configuration info *}
+        {* Header *}
         <div class="token-list-header">
-            <div class="token-list-info">
-                <span class="token-count">{{ tokens.length }} token{{ tokens.length !== 1 ? "s" : "" }}</span>
-                {[ if filterByType !== "All" ]}
-                    <span class="filter-info">• {{ filterByType }} tokens</span>
-                {[/]}
-                {[ if sortBy !== "Name" ]}
-                    <span class="sort-info">• Sorted by {{ sortBy }}</span>
-                {[/]}
-            </div>
-            <div class="token-list-options">
-                {[ if showReferences ]}
-                    <span class="option-badge">References</span>
-                {[/]}
-                {[ if showResolvedValues ]}
-                    <span class="option-badge">Values</span>
-                {[/]}
-                {[ if showPreviews ]}
-                    <span class="option-badge">Previews</span>
-                {[/]}
-            </div>
+            <h4>{{ tokens.length }} Token{{ tokens.length !== 1 ? "s" : "" }}</h4>
+            {[ if showReferences ]}
+                <span class="references-enabled">References: ON</span>
+            {[/]}
         </div>
 
         {* Display tokens based on variant *}
         {[ if displayVariant.equals("Table") ]}
-            <div class="token-table enhanced">
-                <div class="table-header">
-                    <div class="header-cell preview-col">Preview</div>
-                    <div class="header-cell name-col">Token</div>
-                    <div class="header-cell value-col">Value</div>
-                    {[ if showReferences ]}
-                        <div class="header-cell reference-col">Reference</div>
-                    {[/]}
-                    {[ if showDescriptions ]}
-                        <div class="header-cell description-col">Description</div>
-                    {[/]}
-                </div>
-                
-                {[ for token in tokens ]}
-                    <div class="table-row" data-token-type="{{ token.tokenType }}">
-                        {* Preview Column *}
-                        <div class="table-cell preview-cell">
-                            {[ if showPreviews ]}
-                                {[ inject "page_block_token_preview_small" context ({"token": token, "themes": []}) /]}
-                            {[/]}
-                        </div>
-                        
-                        {* Name Column *}
-                        <div class="table-cell name-cell">
-                            <div class="token-name">{{ token.name }}</div>
-                            <div class="token-type">{{ token.tokenType }}</div>
-                        </div>
-                        
-                        {* Value Column *}
-                        <div class="table-cell value-cell">
-                            {[ if showResolvedValues ]}
-                                <div class="resolved-value">
-                                    {[ inject "page_block_token_value" context token /]}
-                                </div>
-                            {[/]}
-                        </div>
-                        
-                        {* Reference Column *}
+            <table class="token-table">
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Type</th>
+                        <th>Value</th>
                         {[ if showReferences ]}
-                            <div class="table-cell reference-cell">
-                                {[ if token.tokenType.equals("Color") ]}
-                                    {[ const colorRef = getColorTokenReference(token.value) /]}
-                                    {[ if colorRef ]}
-                                        <div class="reference-info">
-                                            <span class="reference-name">{{ colorRef }}</span>
-                                            <span class="reference-type">Color</span>
-                                        </div>
-                                    {[ else ]}
-                                        <span class="no-reference">Base token</span>
-                                    {[/]}
-                                {[ elseif isDimensionToken(token.tokenType) ]}
-                                    {[ const measureRef = getMeasureTokenReference(token.value) /]}
-                                    {[ if measureRef ]}
-                                        <div class="reference-info">
-                                            <span class="reference-name">{{ measureRef }}</span>
-                                            <span class="reference-type">{{ token.tokenType }}</span>
-                                        </div>
-                                    {[ else ]}
-                                        <span class="no-reference">Base token</span>
-                                    {[/]}
-                                {[ elseif isStringToken(token.tokenType) ]}
-                                    {[ const textRef = getTextTokenReference(token.value) /]}
-                                    {[ if textRef ]}
-                                        <div class="reference-info">
-                                            <span class="reference-name">{{ textRef }}</span>
-                                            <span class="reference-type">{{ token.tokenType }}</span>
-                                        </div>
-                                    {[ else ]}
-                                        <span class="no-reference">Base token</span>
-                                    {[/]}
-                                {[ elseif token.tokenType.equals("Typography") ]}
-                                    {[ const complexRefs = getComplexTokenReferences(token) /]}
-                                    {[ if complexRefs.length > 0 ]}
-                                        <div class="reference-info complex">
-                                            <div class="reference-count">{{ complexRefs.length }} reference{{ complexRefs.length !== 1 ? "s" : "" }}</div>
-                                            {[ if referenceStyle.equals("Detailed") ]}
-                                                <div class="reference-details">
-                                                    {[ for ref in complexRefs ]}
-                                                        <div class="reference-item">{{ ref }}</div>
-                                                    {[/]}
-                                                </div>
-                                            {[/]}
-                                        </div>
-                                    {[ else ]}
-                                        <span class="no-reference">Base token</span>
-                                    {[/]}
-                                {[ else ]}
-                                    <span class="no-reference">—</span>
-                                {[/]}
-                            </div>
+                            <th>Reference</th>
                         {[/]}
-                        
-                        {* Description Column *}
-                        {[ if showDescriptions ]}
-                            <div class="table-cell description-cell">
-                                {[ if token.description ]}
-                                    <div class="token-description">{{ token.description }}</div>
-                                {[ else ]}
-                                    <span class="no-description">—</span>
-                                {[/]}
-                            </div>
-                        {[/]}
-                    </div>
-                {[/]}
-            </div>
-            
-        {[ elseif displayVariant.contains("Grid") ]}
-            {[ const gridClass = displayVariant.toLowerCase().replace("-", "") /]}
-            <div class="token-grid enhanced {{ gridClass }}">
-                {[ for token in tokens ]}
-                    <div class="token-grid-item" data-token-type="{{ token.tokenType }}">
-                        {* Preview *}
-                        {[ if showPreviews ]}
-                            <div class="token-preview-section">
-                                {[ inject "page_block_token_preview_large" context ({"token": token, "themes": []}) /]}
-                            </div>
-                        {[/]}
-                        
-                        {* Token Info *}
-                        <div class="token-info-section">
-                            <div class="token-name">{{ token.name }}</div>
-                            <div class="token-type">{{ token.tokenType }}</div>
-                            
-                            {[ if showResolvedValues ]}
-                                <div class="resolved-value">
-                                    {[ inject "page_block_token_value" context token /]}
-                                </div>
-                            {[/]}
-                            
+                    </tr>
+                </thead>
+                <tbody>
+                    {[ for token in tokens ]}
+                        <tr>
+                            <td><strong>{{ token.name }}</strong></td>
+                            <td>{{ token.tokenType }}</td>
+                            <td>{[ inject "page_block_token_value" context token /]}</td>
                             {[ if showReferences ]}
-                                <div class="reference-section">
+                                <td>
                                     {[ if token.tokenType.equals("Color") ]}
                                         {[ const colorRef = getColorTokenReference(token.value) /]}
-                                        {[ if colorRef ]}
-                                            <div class="reference-badge">→ {{ colorRef }}</div>
-                                        {[/]}
+                                        {{ colorRef || "Base token" }}
                                     {[ elseif isDimensionToken(token.tokenType) ]}
                                         {[ const measureRef = getMeasureTokenReference(token.value) /]}
-                                        {[ if measureRef ]}
-                                            <div class="reference-badge">→ {{ measureRef }}</div>
-                                        {[/]}
+                                        {{ measureRef || "Base token" }}
                                     {[ elseif isStringToken(token.tokenType) ]}
                                         {[ const textRef = getTextTokenReference(token.value) /]}
-                                        {[ if textRef ]}
-                                            <div class="reference-badge">→ {{ textRef }}</div>
-                                        {[/]}
-                                    {[ elseif token.tokenType.equals("Typography") ]}
-                                        {[ const complexRefs = getComplexTokenReferences(token) /]}
-                                        {[ if complexRefs.length > 0 ]}
-                                            <div class="reference-badges">
-                                                {[ for ref in complexRefs ]}
-                                                    <div class="reference-badge small">{{ ref }}</div>
-                                                {[/]}
-                                            </div>
-                                        {[/]}
+                                        {{ textRef || "Base token" }}
+                                    {[ else ]}
+                                        —
                                     {[/]}
-                                </div>
+                                </td>
                             {[/]}
-                            
-                            {[ if showDescriptions && token.description ]}
-                                <div class="token-description">{{ token.description }}</div>
-                            {[/]}
-                        </div>
+                        </tr>
+                    {[/]}
+                </tbody>
+            </table>
+            
+        {[ elseif displayVariant.equals("Grid") ]}
+            <div class="token-grid">
+                {[ for token in tokens ]}
+                    <div class="token-card">
+                        <h5>{{ token.name }}</h5>
+                        <p><strong>Type:</strong> {{ token.tokenType }}</p>
+                        <p><strong>Value:</strong> {[ inject "page_block_token_value" context token /]}</p>
+                        {[ if showReferences ]}
+                            <p><strong>Reference:</strong>
+                                {[ if token.tokenType.equals("Color") ]}
+                                    {[ const colorRef = getColorTokenReference(token.value) /]}
+                                    {{ colorRef || "Base token" }}
+                                {[ elseif isDimensionToken(token.tokenType) ]}
+                                    {[ const measureRef = getMeasureTokenReference(token.value) /]}
+                                    {{ measureRef || "Base token" }}
+                                {[ elseif isStringToken(token.tokenType) ]}
+                                    {[ const textRef = getTextTokenReference(token.value) /]}
+                                    {{ textRef || "Base token" }}
+                                {[ else ]}
+                                    —
+                                {[/]}
+                            </p>
+                        {[/]}
                     </div>
                 {[/]}
             </div>
             
-        {[ elseif displayVariant.equals("Stack") ]}
-            <div class="token-stack enhanced">
+        {[ else ]}
+            {* Stack variant *}
+            <div class="token-stack">
                 {[ for token in tokens ]}
-                    <div class="token-stack-item" data-token-type="{{ token.tokenType }}">
-                        {[ if showPreviews ]}
-                            <div class="stack-preview">
-                                {[ inject "page_block_token_preview_stack" context ({"token": token, "themes": []}) /]}
-                            </div>
+                    <div class="token-stack-item">
+                        <span class="token-name">{{ token.name }}</span>
+                        <span class="token-value">{[ inject "page_block_token_value" context token /]}</span>
+                        {[ if showReferences ]}
+                            <span class="token-reference">
+                                {[ if token.tokenType.equals("Color") ]}
+                                    {[ const colorRef = getColorTokenReference(token.value) /]}
+                                    → {{ colorRef || "Base" }}
+                                {[ elseif isDimensionToken(token.tokenType) ]}
+                                    {[ const measureRef = getMeasureTokenReference(token.value) /]}
+                                    → {{ measureRef || "Base" }}
+                                {[ elseif isStringToken(token.tokenType) ]}
+                                    {[ const textRef = getTextTokenReference(token.value) /]}
+                                    → {{ textRef || "Base" }}
+                                {[/]}
+                            </span>
                         {[/]}
-                        
-                        <div class="stack-content">
-                            <div class="stack-header">
-                                <span class="token-name">{{ token.name }}</span>
-                                <span class="token-type">{{ token.tokenType }}</span>
-                            </div>
-                            
-                            {[ if showResolvedValues ]}
-                                <div class="stack-value">
-                                    {[ inject "page_block_token_value" context token /]}
-                                </div>
-                            {[/]}
-                            
-                            {[ if showReferences ]}
-                                <div class="stack-references">
-                                    {[ if token.tokenType.equals("Typography") ]}
-                                        {[ const complexRefs = getComplexTokenReferences(token) /]}
-                                        {[ if complexRefs.length > 0 ]}
-                                            <div class="reference-list">
-                                                {[ for ref in complexRefs ]}
-                                                    <span class="reference-item">{{ ref }}</span>
-                                                {[/]}
-                                            </div>
-                                        {[/]}
-                                    {[ else ]}
-                                        {[ if token.tokenType.equals("Color") ]}
-                                            {[ const colorRef = getColorTokenReference(token.value) /]}
-                                            {[ if colorRef ]}
-                                                <span class="reference-item">References: {{ colorRef }}</span>
-                                            {[/]}
-                                        {[ elseif isDimensionToken(token.tokenType) ]}
-                                            {[ const measureRef = getMeasureTokenReference(token.value) /]}
-                                            {[ if measureRef ]}
-                                                <span class="reference-item">References: {{ measureRef }}</span>
-                                            {[/]}
-                                        {[ elseif isStringToken(token.tokenType) ]}
-                                            {[ const textRef = getTextTokenReference(token.value) /]}
-                                            {[ if textRef ]}
-                                                <span class="reference-item">References: {{ textRef }}</span>
-                                            {[/]}
-                                        {[/]}
-                                    {[/]}
-                                </div>
-                            {[/]}
-                            
-                            {[ if showDescriptions && token.description ]}
-                                <div class="stack-description">{{ token.description }}</div>
-                            {[/]}
-                        </div>
                     </div>
                 {[/]}
             </div>
@@ -300,12 +119,7 @@
     
 {[ else ]}
     <div class="token-list-empty">
-        <div class="empty-state">
-            <h4>No tokens selected</h4>
-            <p>Select tokens or a token group to display their values and references.</p>
-            {[ if filterByType !== "All" ]}
-                <p><small>Current filter: {{ filterByType }} tokens</small></p>
-            {[/]}
-        </div>
+        <p>Enter token IDs separated by commas to display tokens with references.</p>
+        <p><small>Example: spacing-xs,spacing-sm,spacing-base</small></p>
     </div>
 {[/]}

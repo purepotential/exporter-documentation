@@ -16,11 +16,15 @@
     {{ measureValueToReadableUnit(token.value.width, showReferences) }} {{ getBorderStyleValue(token.value.style) }} {{ getFormattedColor(token.value.color, false, null, showReferences) }}
 {[ elseif token.tokenType.equals("Font") ]}
     {{ token.value.fontFamily.text }} {{ token.value.fontWeight.text }}
-    {[ if (showReferences && (getTextTokenReference(token.value.fontFamily) || getTextTokenReference(token.value.fontWeight))) ]}
-        <span class="token-references">
-            {[ if getTextTokenReference(token.value.fontFamily) ]}(Font: {{ getTextTokenReference(token.value.fontFamily) }}){[/]}
-            {[ if getTextTokenReference(token.value.fontWeight) ]} (Weight: {{ getTextTokenReference(token.value.fontWeight) }}){[/]}
-        </span>
+    {[ if showReferences ]}
+        {[ const fontFamilyRef = getTextTokenReference(token.value.fontFamily) /]}
+        {[ const fontWeightRef = getTextTokenReference(token.value.fontWeight) /]}
+        {[ if (fontFamilyRef || fontWeightRef) ]}
+            <span class="token-references">
+                {[ if fontFamilyRef ]}(Font: {{ fontFamilyRef }}){[/]}
+                {[ if fontWeightRef ]} (Weight: {{ fontWeightRef }}){[/]}
+            </span>
+        {[/]}
     {[/]}
 {[ elseif token.tokenType.equals("Gradient") ]}
     {{ gradientDescription(token) }}

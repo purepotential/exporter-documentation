@@ -6,7 +6,7 @@
   "organization": "Supernova",
   "source_dir": "src",
   "assets_dir": "assets",
-  "version": "5.6.2",
+  "version": "5.6.3",
   "usesBrands": false,
   "config": {
     "sources": "sources.json",
@@ -782,9 +782,9 @@
         ]
       },
       {
-        "key": "io.supernova.documentation-main.token-preview",
+        "key": "io.supernova.documentation-main.token-preview-simple",
         "category": "Tokens",
-        "title": "Token Preview with References",
+        "title": "Simple Token Preview",
         "description": "Display token with resolved value and reference information",
         "icon": "icons/custom-block-token-preview.png",
         "mode": "block",
@@ -793,31 +793,7 @@
             "key": "tokenId",
             "type": "string",
             "default": "",
-            "label": "Token ID",
-            "description": "Enter the token ID to display"
-          },
-          {
-            "key": "showReferences",
-            "type": "boolean",
-            "default": true,
-            "label": "Show token references"
-          },
-          {
-            "key": "showResolvedValue",
-            "type": "boolean",
-            "default": true,
-            "label": "Show resolved value"
-          },
-          {
-            "key": "displayStyle",
-            "type": "enum",
-            "values": [
-              "Inline",
-              "Detailed",
-              "Card"
-            ],
-            "default": "Inline",
-            "label": "Display style"
+            "label": "Token ID"
           }
         ]
       },
@@ -834,14 +810,7 @@
             "type": "string",
             "default": "",
             "label": "Token IDs",
-            "description": "Enter token IDs separated by commas (e.g., token1,token2,token3)"
-          },
-          {
-            "key": "tokenGroupId",
-            "type": "string",
-            "default": "",
-            "label": "Token Group ID",
-            "description": "Alternative: Enter a token group ID to display all tokens in that group"
+            "description": "Enter token IDs separated by commas"
           },
           {
             "key": "showReferences",
@@ -850,74 +819,11 @@
             "label": "Show token references"
           },
           {
-            "key": "showResolvedValues",
-            "type": "boolean",
-            "default": true,
-            "label": "Show resolved values"
-          },
-          {
-            "key": "showPreviews",
-            "type": "boolean",
-            "default": true,
-            "label": "Show token previews"
-          },
-          {
-            "key": "showDescriptions",
-            "type": "boolean",
-            "default": true,
-            "label": "Show token descriptions"
-          },
-          {
             "key": "displayVariant",
             "type": "enum",
-            "values": [
-              "Table",
-              "Grid-4",
-              "Grid-3",
-              "Grid-2",
-              "Grid-1",
-              "Stack"
-            ],
+            "values": ["Table", "Grid", "Stack"],
             "default": "Table",
             "label": "Display variant"
-          },
-          {
-            "key": "referenceStyle",
-            "type": "enum",
-            "values": [
-              "Simple",
-              "Detailed",
-              "Full path"
-            ],
-            "default": "Simple",
-            "label": "Reference display style"
-          },
-          {
-            "key": "sortBy",
-            "type": "enum",
-            "values": [
-              "Name",
-              "Type",
-              "Value",
-              "Reference"
-            ],
-            "default": "Name",
-            "label": "Sort tokens by"
-          },
-          {
-            "key": "filterByType",
-            "type": "enum",
-            "values": [
-              "All",
-              "Color",
-              "Typography",
-              "Dimension",
-              "String",
-              "Shadow",
-              "Gradient"
-            ],
-            "default": "All",
-            "label": "Filter by token type"
           }
         ]
       }
