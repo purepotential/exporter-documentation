@@ -50,6 +50,26 @@
   }
 }
 
+/* Token reference info display */
+.token-reference-info {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 8px;
+  margin-top: 8px;
+  font-size: 0.875em;
+  line-height: 1.4;
+}
+
+.token-reference-info strong {
+  color: #495057;
+  font-weight: 600;
+}
+
+.token-value-container {
+  position: relative;
+}
+
 /* Contrast grid specific styles */
 .token-references-overlay {
   position: absolute;
