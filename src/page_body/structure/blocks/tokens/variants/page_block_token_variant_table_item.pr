@@ -36,6 +36,45 @@
                     {{ token.name.replacing("/", " / ") }}
                 {[/]}
             </div>
+            
+            {[ const configuration = exportConfiguration() /]}
+            {[ const showReferences = configuration.blockConfigTokensShowReferences /]}
+            
+            {[ if showReferences ]}
+                {[ if token.tokenType.equals("Color") ]}
+                    {[ const colorRef = getColorTokenReference(token.value) /]}
+                    {[ if colorRef ]}
+                        <div class="reference-value">{{ colorRef }}</div>
+                    {[/]}
+                {[/]}
+                {[ if isDimensionToken(token.tokenType) ]}
+                    {[ const measureRef = getMeasureTokenReference(token.value) /]}
+                    {[ if measureRef ]}
+                        <div class="reference-value">{{ measureRef }}</div>
+                    {[/]}
+                {[/]}
+                {[ if isStringToken(token.tokenType) ]}
+                    {[ const textRef = getTextTokenReference(token.value) /]}
+                    {[ if textRef ]}
+                        <div class="reference-value">{{ textRef }}</div>
+                    {[/]}
+                {[/]}
+            {[/]}
+            
+            <div class="resolved-value">
+                {[ if token.tokenType.equals("Color") ]}
+                    {{ getFormattedColor(token.value, false, null, false) }}
+                {[ elseif isDimensionToken(token.tokenType) ]}
+                    {{ measureValueToReadableUnit(token.value, false) }}
+                {[ elseif isStringToken(token.tokenType) ]}
+                    {{ token.value.text }}
+                {[ elseif token.tokenType.equals("Opacity") ]}
+                    {{ decimalOpacityToPercentage(token.value) }}
+                {[ else ]}
+                    {{ token.value }}
+                {[/]}
+            </div>
+            
             {[ if token.description ]}
                 <div class="description">{{ token.description }}</div>
             {[/]}

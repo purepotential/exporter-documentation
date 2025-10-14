@@ -50,6 +50,24 @@
   }
 }
 
+/* Token info section styling to match existing typography */
+.info .reference-value {
+  color: var(--color-text-secondary, #666);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0.25rem 0;
+  font-family: var(--font-mono, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace);
+}
+
+.info .resolved-value {
+  color: var(--color-text-primary, #1a1a1a);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0.25rem 0;
+  font-family: var(--font-mono, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace);
+  font-weight: 500;
+}
+
 /* Structured token value display */
 .token-value-structured {
   display: flex;
@@ -128,6 +146,11 @@
   .token-reference-label,
   .token-resolved-label {
     min-width: auto;
+  }
+  
+  .info .reference-value,
+  .info .resolved-value {
+    font-size: 0.8125rem;
   }
 }
 
