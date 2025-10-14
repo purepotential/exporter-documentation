@@ -69,6 +69,15 @@
   font-family: var(--fontFamilyCode);
 }
 
+.token-table .item .info .theme-label,
+.info .theme-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--colorInkTertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
 /* Structured token value display */
 .token-value-structured {
   display: flex;
