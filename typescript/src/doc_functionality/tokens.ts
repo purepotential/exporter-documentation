@@ -501,61 +501,49 @@ export function getTextTokenReference(textValue: TextTokenValue, ds?: any): stri
 
 /** Get token reference with proper group hierarchy from design system */
 export function getTokenReferenceWithGroup(token: Token, tokenId: string, ds?: any): string {
-  // Debug: log what we have
-  console.log('getTokenReferenceWithGroup called with:', {
-    tokenName: token?.name,
-    tokenId: tokenId,
-    hasDs: !!ds,
-    dsKeys: ds ? Object.keys(ds) : []
-  })
-  
   // If we have access to the design system, try to get the actual token group
   if (ds && token && tokenId) {
     try {
-      // Try to get all token groups
+      // Method 1: Get the full token and find its group using the SDK structure
+      const fullToken = ds.tokenById ? ds.tokenById(tokenId) : null
+      if (fullToken) {
+        // Try to get the token group that contains this token
+        const tokenGroups = ds.tokenGroups ? ds.tokenGroups() : null
+        if (tokenGroups) {
+          const tokenGroup = findTokenGroupContainingToken(tokenId, tokenGroups)
+          if (tokenGroup) {
+            const groupPath = buildTokenGroupPathFromSDK(tokenGroup)
+            return groupPath ? `${groupPath}/${token.name}` : token.name
+          }
+        }
+      }
+
+      // Method 2: Try using token groups directly
       const tokenGroups = ds.tokenGroups ? ds.tokenGroups() : null
-      console.log('Token groups available:', !!tokenGroups)
-      
       if (tokenGroups) {
         const tokenGroup = findTokenGroupByTokenId(tokenId, tokenGroups)
         if (tokenGroup) {
-          const groupPath = buildTokenGroupPath(tokenGroup)
-          const result = groupPath ? `${groupPath}/${token.name}` : token.name
-          console.log('Found group path:', result)
-          return result
+          const groupPath = buildTokenGroupPathFromSDK(tokenGroup)
+          return groupPath ? `${groupPath}/${token.name}` : token.name
         }
       }
-      
-      // Alternative: try to get the token directly and check its properties
-      const fullToken = ds.tokenById ? ds.tokenById(tokenId) : null
-      console.log('Full token from ds.tokenById:', fullToken ? 'found' : 'not found')
-      
-      if (fullToken && fullToken.parent) {
-        // If the token has a parent property, try to build path from it
-        const parentPath = getTokenParentPath(fullToken.parent)
-        const result = parentPath ? `${parentPath}/${token.name}` : token.name
-        console.log('Found parent path:', result)
-        return result
-      }
-      
+
     } catch (error) {
-      // Fallback if design system access fails
-      console.warn('Could not access token groups from design system:', error)
+      // Fallback if design system access fails - silently continue
     }
   }
 
-  // Fallback to the previous path detection method
-  console.log('Using fallback path detection')
-  return getFullTokenPath(token)
+  // Fallback: just return the token name (better than UUID)
+  return token?.name || tokenId
 }
 
 /** Get the path from a token's parent hierarchy */
 function getTokenParentPath(parent: any): string | null {
   if (!parent) return null
-  
+
   const pathParts: string[] = []
   let current = parent
-  
+
   // Walk up the parent chain
   while (current && !current.isRoot) {
     if (current.name) {
@@ -563,20 +551,35 @@ function getTokenParentPath(parent: any): string | null {
     }
     current = current.parent
   }
-  
+
   return pathParts.length > 0 ? pathParts.join('/') : null
 }
 
-/** Find the token group that contains a specific token ID */
+/** Find the token group that contains a specific token ID using available properties */
+function findTokenGroupContainingToken(tokenId: string, tokenGroups: TokenGroup[]): TokenGroup | null {
+  for (const group of tokenGroups) {
+    // Check if token is directly in this group using childrenIds
+    if (group.childrenIds && group.childrenIds.includes(tokenId)) {
+      return group
+    }
+
+    // Recursively check subgroups
+    if (group.subgroups && group.subgroups.length > 0) {
+      const found = findTokenGroupContainingToken(tokenId, group.subgroups)
+      if (found) {
+        return found
+      }
+    }
+  }
+
+  return null
+}
+
+/** Find the token group that contains a specific token ID (legacy method) */
 function findTokenGroupByTokenId(tokenId: string, tokenGroups: TokenGroup[]): TokenGroup | null {
-  // Debug: log what we're working with
-  console.log('Searching for token ID:', tokenId)
-  console.log('Available token groups:', tokenGroups.map(g => ({ name: g.name, childrenCount: g.childrenIds?.length || 0 })))
-  
   for (const group of tokenGroups) {
     // Check if token is directly in this group
     if (group.childrenIds && group.childrenIds.includes(tokenId)) {
-      console.log('Found token in group:', group.name)
       return group
     }
 
@@ -588,16 +591,15 @@ function findTokenGroupByTokenId(tokenId: string, tokenGroups: TokenGroup[]): To
       }
     }
   }
-  
-  console.log('Token not found in any group')
+
   return null
 }
 
-/** Build the full path of a token group including parent hierarchy */
-function buildTokenGroupPath(tokenGroup: TokenGroup): string {
+/** Build the full path of a token group using SDK structure */
+function buildTokenGroupPathFromSDK(tokenGroup: TokenGroup): string {
   const pathParts: string[] = []
 
-  // Add parent path if exists
+  // According to SDK docs, path is "A list of segments representing the hierarchical path"
   if (tokenGroup.path && tokenGroup.path.length > 0) {
     pathParts.push(...tokenGroup.path)
   }
@@ -608,6 +610,11 @@ function buildTokenGroupPath(tokenGroup: TokenGroup): string {
   }
 
   return pathParts.join('/')
+}
+
+/** Build the full path of a token group including parent hierarchy (legacy) */
+function buildTokenGroupPath(tokenGroup: TokenGroup): string {
+  return buildTokenGroupPathFromSDK(tokenGroup)
 }
 
 /** Get the full path of a token including its group hierarchy */
