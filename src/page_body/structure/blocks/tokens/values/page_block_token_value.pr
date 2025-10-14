@@ -1,6 +1,7 @@
 {[ let token = context /]}
 
-{* Basic value display for left column *}
+{* Basic value display for left column with proper styling *}
+<div class="token-value">
 {[ if token.tokenType.equals("Color") ]}
     {{ getFormattedColor(token.value, false, null, false) }}
 {[ elseif isDimensionToken(token.tokenType) ]}
@@ -12,3 +13,4 @@
 {[ else ]}
     {{ token.value }}
 {[/]}
+</div>
