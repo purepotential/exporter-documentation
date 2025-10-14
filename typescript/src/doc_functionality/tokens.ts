@@ -51,12 +51,12 @@ export function gradientTokenValue(gradientToken: GradientToken) {
     switch (gradient.type) {
       case "Linear":
         // calculate the gradient angle
-        const deltaX = Math.round((gradient.to.x - gradient.from.x)*100);
-        const deltaY = Math.round((gradient.to.y - gradient.from.y)*100);
+        const deltaX = Math.round((gradient.to.x - gradient.from.x) * 100);
+        const deltaY = Math.round((gradient.to.y - gradient.from.y) * 100);
 
         // adding 90 to move the angle to the correct position
         // todo: take into account the direction of the gradient and position of the each stop
-        const angle = Math.round(Math.atan2(deltaY, deltaX)*(180/Math.PI))+90;
+        const angle = Math.round(Math.atan2(deltaY, deltaX) * (180 / Math.PI)) + 90;
 
         gradientType = `linear-gradient(${angle}deg, `
         break
@@ -86,10 +86,10 @@ export function gradientTokenValue(gradientToken: GradientToken) {
 export function shadowDescription(shadowToken: ShadowToken) {
 
   let connectedShadow = shadowToken.value?.reverse().map((shadow) => {
-      return shadowTokenValue(shadow)
-    })
+    return shadowTokenValue(shadow)
+  })
     .join(", ")
-  
+
 
   return connectedShadow
 }
@@ -106,23 +106,34 @@ export function shadowTokenValue(shadowToken: ShadowTokenValue): string {
 }
 
 
-export function getFormattedColor(colorValue: ColorTokenValue, forceRgbFormat: boolean = false, customOpacity: MeasureTokenValue | null = null): string {
+export function getFormattedColor(colorValue: ColorTokenValue, forceRgbFormat: boolean = false, customOpacity: MeasureTokenValue | null = null, showReference: boolean = false): string {
   // Use custom opacity if provided, otherwise use color value's opacity
   const opacity = customOpacity?.measure ?? colorValue.opacity.measure;
 
+  let colorString: string;
   if (opacity === 1) {
     if (forceRgbFormat) {
-      return `rgb(${colorValue.color.r},${colorValue.color.g},${colorValue.color.b})`
+      colorString = `rgb(${colorValue.color.r},${colorValue.color.g},${colorValue.color.b})`
     } else {
       // return as hex by default
-      return rgbToHex(colorValue.color.r, colorValue.color.g, colorValue.color.b)
+      colorString = rgbToHex(colorValue.color.r, colorValue.color.g, colorValue.color.b)
     }
   } else {
-    return `rgba(${colorValue.color.r},${colorValue.color.g},${colorValue.color.b},${Number(opacity.toFixed(2))})`
+    colorString = `rgba(${colorValue.color.r},${colorValue.color.g},${colorValue.color.b},${Number(opacity.toFixed(2))})`
   }
+
+  // Add reference if requested and available
+  if (showReference) {
+    const reference = getColorTokenReference(colorValue)
+    if (reference) {
+      return `${colorString} <span class="token-reference">(${reference})</span>`
+    }
+  }
+
+  return colorString
 }
 
-function rgbToHex(r: number, g: number, b:number) {
+function rgbToHex(r: number, g: number, b: number) {
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
@@ -176,8 +187,18 @@ function getValueWithPixels(value: number, forceUnit?: boolean): string {
   }
 }
 
-export function measureValueToReadableUnit(value: MeasureTokenValue) {
-  return `${value.measure}${measureTypeIntoReadableUnit(value.unit)}`
+export function measureValueToReadableUnit(value: MeasureTokenValue, showReference: boolean = false) {
+  const measureString = `${value.measure}${measureTypeIntoReadableUnit(value.unit)}`
+
+  // Add reference if requested and available
+  if (showReference) {
+    const reference = getMeasureTokenReference(value)
+    if (reference) {
+      return `${measureString} <span class="token-reference">(${reference})</span>`
+    }
+  }
+
+  return measureString
 }
 
 function nonNegativeValue(num: number) {
@@ -220,7 +241,7 @@ export function convertTextCaseToTextTransform(textCase: TextCase, includeCSSPro
       property = "text-transform"
       break
     case "Lower":
-      value = "lowercase" 
+      value = "lowercase"
       property = "text-transform"
       break
     case "Camel":
@@ -252,7 +273,7 @@ export function convertTextDecorationToCSS(textDecoration: TextDecoration): stri
       return "underline"
     case "Strikethrough":
       return "line-through"
-    default: 
+    default:
       return "none"
   }
 }
@@ -310,7 +331,7 @@ export function normalizeFontSizeCSS(fontSize: MeasureTokenValue, maxFontSize: b
   if (maxFontSize === true) {
     const actualSize = fontSize.unit === "Rem" ? fontSize.measure * remBase : fontSize.measure;
     if (actualSize > 24) {
-      fontSizeMeasure = fontSize.unit === "Rem" ? 24/remBase : 24;
+      fontSizeMeasure = fontSize.unit === "Rem" ? 24 / remBase : 24;
     }
   }
 
@@ -322,7 +343,7 @@ export function getColorValueFromSettings(value: string | null, alias: ColorToke
   if (value !== null) {
     return value;
   } else if (alias !== null) {
-      return `${tokenValueToHex(alias.value)}`;
+    return `${tokenValueToHex(alias.value)}`;
   } else {
     return null;
   }
@@ -364,9 +385,9 @@ export function isDimensionToken(tokenType: TokenType): boolean {
 /** Check if the token is in part of string token group */
 export function isStringToken(tokenType: TokenType): boolean {
   return (
-    tokenType === "ProductCopy" || 
-    tokenType === "String" || 
-    tokenType === "FontFamily" || 
+    tokenType === "ProductCopy" ||
+    tokenType === "String" ||
+    tokenType === "FontFamily" ||
     tokenType === "FontWeight"
   )
 }
@@ -382,4 +403,238 @@ export function isOptionsToken(tokenType: TokenType): boolean {
 /* Converts decimal opacity to percentage */
 export function decimalOpacityToPercentage(token: MeasureTokenValue): string {
   return `${Math.round(token.measure * 100)}%`
+}
+
+// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+// MARK: - Token References
+
+/** Get the token reference name from token value if it exists */
+export function getTokenValueReference(tokenValue: any): string | null {
+  if (tokenValue.referencedTokenId && tokenValue.referencedToken) {
+    return tokenValue.referencedToken.name
+  }
+  return null
+}
+
+/** Get the full token reference path from token value if it exists */
+export function getTokenValueReferencePath(tokenValue: any, tokenGroups?: TokenGroup[]): string | null {
+  if (!tokenValue.referencedTokenId || !tokenValue.referencedToken) {
+    return null
+  }
+
+  // If we have token groups, try to find the full path
+  if (tokenGroups) {
+    const referencedToken = findTokenInGroups(tokenValue.referencedTokenId, tokenGroups)
+    if (referencedToken?.group) {
+      const groupPath = [...referencedToken.group.path, referencedToken.group.name].join('/')
+      return `${groupPath}/${tokenValue.referencedToken.name}`
+    }
+  }
+
+  return tokenValue.referencedToken.name
+}
+
+/** Helper function to find a token in token groups */
+function findTokenInGroups(tokenId: string, tokenGroups: TokenGroup[]): { token: Token, group: TokenGroup } | null {
+  for (const group of tokenGroups) {
+    // Check if token is in current group's children
+    if (group.childrenIds.includes(tokenId)) {
+      // This is a simplified approach - in a real implementation you'd need access to the actual tokens
+      return null
+    }
+
+    // Recursively check subgroups
+    const found = findTokenInGroups(tokenId, group.subgroups)
+    if (found) {
+      return found
+    }
+  }
+  return null
+}
+
+/** Format token value with reference display */
+export function formatTokenValueWithReference(
+  tokenValue: any,
+  resolvedValue: string,
+  showReference: boolean = true,
+  tokenGroups?: TokenGroup[]
+): string {
+  if (!showReference) {
+    return resolvedValue
+  }
+
+  const reference = getTokenValueReferencePath(tokenValue, tokenGroups) || getTokenValueReference(tokenValue)
+
+  if (reference) {
+    return `${resolvedValue} <span class="token-reference">(${reference})</span>`
+  }
+
+  return resolvedValue
+}
+
+/** Check if a token value has a reference */
+export function hasTokenValueReference(tokenValue: any): boolean {
+  return !!(tokenValue.referencedTokenId && tokenValue.referencedToken)
+}
+
+/** Get token reference for specific token value types */
+export function getColorTokenReference(colorValue: ColorTokenValue): string | null {
+  if (colorValue.referencedTokenId && colorValue.referencedToken) {
+    return colorValue.referencedToken.name
+  }
+  return null
+}
+
+export function getMeasureTokenReference(measureValue: MeasureTokenValue): string | null {
+  if (measureValue.referencedTokenId && measureValue.referencedToken) {
+    return measureValue.referencedToken.name
+  }
+  return null
+}
+
+export function getTextTokenReference(textValue: TextTokenValue): string | null {
+  if (textValue.referencedTokenId && textValue.referencedToken) {
+    return textValue.referencedToken.name
+  }
+  return null
+}
+
+/** Main function to display any token with its resolved value and optional reference */
+export function displayTokenWithReference(token: Token, options: {
+  showReference?: boolean
+  tokenGroups?: TokenGroup[]
+  maxFontSize?: boolean
+  forceRgbFormat?: boolean
+} = {}): string {
+  const { showReference = true, tokenGroups, maxFontSize = false, forceRgbFormat = false } = options
+
+  let resolvedValue: string
+
+  // Get the resolved value based on token type
+  switch (token.tokenType) {
+    case "Color":
+      const colorToken = token as ColorToken
+      resolvedValue = getFormattedColor(colorToken.value, forceRgbFormat, null, showReference)
+      break
+
+    case "Typography":
+      const typographyToken = token as TypographyToken
+      resolvedValue = typographyDescription(typographyToken)
+      // Add reference for typography token if available
+      if (showReference) {
+        resolvedValue = formatTokenValueWithReference(typographyToken.value, resolvedValue, showReference, tokenGroups)
+      }
+      break
+
+    case "Shadow":
+      const shadowToken = token as ShadowToken
+      resolvedValue = shadowDescription(shadowToken)
+      break
+
+    case "Gradient":
+      const gradientToken = token as GradientToken
+      resolvedValue = gradientDescription(gradientToken)
+      break
+
+    case "BorderRadius":
+    case "BorderWidth":
+    case "Dimension":
+    case "Duration":
+    case "FontSize":
+    case "LetterSpacing":
+    case "LineHeight":
+    case "Opacity":
+    case "ParagraphSpacing":
+    case "Size":
+    case "Space":
+    case "ZIndex":
+      const measureToken = token as MeasureToken
+      resolvedValue = measureValueToReadableUnit(measureToken.value, showReference)
+      break
+
+    case "ProductCopy":
+    case "String":
+    case "FontFamily":
+    case "FontWeight":
+      const textToken = token as TextToken
+      resolvedValue = textToken.value.text
+      if (showReference) {
+        const reference = getTextTokenReference(textToken.value)
+        if (reference) {
+          resolvedValue = `${resolvedValue} <span class="token-reference">(${reference})</span>`
+        }
+      }
+      break
+
+    default:
+      resolvedValue = "Unsupported token type"
+  }
+
+  return resolvedValue
+}
+
+// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+// MARK: - Token Reference Utilities
+
+/** Create a simple token reference display (just the name) */
+export function createSimpleTokenReference(referenceName: string): string {
+  return `<span class="token-reference">${referenceName}</span>`
+}
+
+/** Create a detailed token reference display with path */
+export function createDetailedTokenReference(referencePath: string): string {
+  return `<span class="token-reference-path">${referencePath}</span>`
+}
+
+/** Get all references from a complex token (like typography with multiple referenced values) */
+export function getComplexTokenReferences(token: Token): string[] {
+  const references: string[] = []
+
+  switch (token.tokenType) {
+    case "Typography":
+      const typographyToken = token as TypographyToken
+      const fontFamilyRef = getTextTokenReference(typographyToken.value.fontFamily)
+      const fontWeightRef = getTextTokenReference(typographyToken.value.fontWeight)
+      const fontSizeRef = getMeasureTokenReference(typographyToken.value.fontSize)
+      const lineHeightRef = typographyToken.value.lineHeight ? getMeasureTokenReference(typographyToken.value.lineHeight) : null
+      const letterSpacingRef = getMeasureTokenReference(typographyToken.value.letterSpacing)
+      const paragraphSpacingRef = getMeasureTokenReference(typographyToken.value.paragraphSpacing)
+
+      if (fontFamilyRef) references.push(`Font Family: ${fontFamilyRef}`)
+      if (fontWeightRef) references.push(`Font Weight: ${fontWeightRef}`)
+      if (fontSizeRef) references.push(`Font Size: ${fontSizeRef}`)
+      if (lineHeightRef) references.push(`Line Height: ${lineHeightRef}`)
+      if (letterSpacingRef) references.push(`Letter Spacing: ${letterSpacingRef}`)
+      if (paragraphSpacingRef) references.push(`Paragraph Spacing: ${paragraphSpacingRef}`)
+      break
+
+    case "Color":
+      const colorToken = token as ColorToken
+      const colorRef = getColorTokenReference(colorToken.value)
+      // Note: opacity in ColorTokenValue has different structure than MeasureTokenValue
+      const opacityRef = colorToken.value.opacity.referencedToken?.name
+
+      if (colorRef) references.push(`Color: ${colorRef}`)
+      if (opacityRef) references.push(`Opacity: ${opacityRef}`)
+      break
+
+    case "Shadow":
+      const shadowToken = token as ShadowToken
+      shadowToken.value.forEach((shadow, index) => {
+        const colorRef = getColorTokenReference(shadow.color)
+        if (colorRef) references.push(`Shadow ${index + 1} Color: ${colorRef}`)
+      })
+      break
+  }
+
+  return references
+}
+
+/** Format multiple references as a readable list */
+export function formatReferenceList(references: string[]): string {
+  if (references.length === 0) return ""
+  if (references.length === 1) return `<span class="token-references">(${references[0]})</span>`
+
+  const formattedRefs = references.map(ref => `<li>${ref}</li>`).join("")
+  return `<span class="token-references"><ul>${formattedRefs}</ul></span>`
 }

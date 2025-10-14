@@ -1,0 +1,71 @@
+/* Token Reference Styles */
+
+.token-reference {
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 0.875em;
+  font-style: italic;
+  margin-left: 0.5rem;
+}
+
+.token-reference-path {
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 0.875em;
+  font-family: var(--font-mono, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace);
+  background: var(--color-background-secondary, #f3f4f6);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.token-references {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75em;
+  color: var(--color-text-tertiary, #9ca3af);
+}
+
+.token-references ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.token-references li {
+  margin: 0.125rem 0;
+}
+
+.token-complex-references {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border-light, #e5e7eb);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .token-reference,
+  .token-reference-path {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .token-reference {
+    color: var(--color-text-secondary-dark, #9ca3af);
+  }
+  
+  .token-reference-path {
+    color: var(--color-text-secondary-dark, #9ca3af);
+    background: var(--color-background-secondary-dark, #374151);
+  }
+  
+  .token-references {
+    color: var(--color-text-tertiary-dark, #6b7280);
+  }
+  
+  .token-complex-references {
+    border-top-color: var(--color-border-light-dark, #4b5563);
+  }
+}

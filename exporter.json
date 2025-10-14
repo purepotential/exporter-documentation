@@ -378,6 +378,27 @@
         "default": "Plain background"
       },
       {
+        "key": "blockConfigTokensShowReferences",
+        "type": "boolean",
+        "label": "Token blocks: Show token references",
+        "description": "When enabled, token blocks will display references to other tokens alongside resolved values (e.g., 'primary-red' next to '#ff0000').",
+        "category": "Blocks",
+        "default": true
+      },
+      {
+        "key": "blockConfigTokensReferenceStyle",
+        "type": "enum",
+        "label": "Token blocks: Reference display style",
+        "description": "Choose how token references are displayed in token blocks.",
+        "category": "Blocks",
+        "values": [
+          "Simple name only",
+          "Full path",
+          "Detailed list for complex tokens"
+        ],
+        "default": "Simple name only"
+      },
+      {
         "key": "advancedCustomizationShowNextPreviousNavigation",
         "type": "boolean",
         "label": "Show navigation at bottom of page",
