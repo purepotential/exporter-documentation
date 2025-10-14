@@ -50,6 +50,72 @@
   }
 }
 
+/* Structured token value display */
+.token-value-structured {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.token-reference-line,
+.token-resolved-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.token-reference-label,
+.token-resolved-label {
+  font-weight: 600;
+  color: var(--color-text-secondary, #666);
+  min-width: 70px;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.token-reference-value {
+  color: var(--color-accent, #0066cc);
+  font-family: var(--font-mono, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace);
+  font-weight: 500;
+}
+
+.token-resolved-value {
+  color: var(--color-text-primary, #1a1a1a);
+  font-family: var(--font-mono, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace);
+  font-weight: 500;
+}
+
+.token-description-line {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border-light, #e5e7eb);
+}
+
+.token-description-text {
+  color: var(--color-text-secondary, #666);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .token-reference-line,
+  .token-resolved-line {
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  
+  .token-reference-label,
+  .token-resolved-label {
+    min-width: auto;
+  }
+}
+
 /* Token reference info display */
 .token-reference-info {
   background: #f8f9fa;
