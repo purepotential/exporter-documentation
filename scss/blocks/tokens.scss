@@ -255,6 +255,12 @@
         line-height: 16px;
         color: var(--colorInkSecondary);
       }
+
+      .reference-value,
+      .resolved-value {
+        @extend .description;
+        font-family: var(--fontFamilyCode);
+      }
     }
 
     .custom-properties {

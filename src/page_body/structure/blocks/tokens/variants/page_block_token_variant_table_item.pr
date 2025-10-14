@@ -42,19 +42,19 @@
             
             {[ if showReferences ]}
                 {[ if token.tokenType.equals("Color") ]}
-                    {[ const colorRef = getColorTokenReference(token.value) /]}
+                    {[ const colorRef = getColorTokenReference(token.value, ds) /]}
                     {[ if colorRef ]}
                         <div class="reference-value">{{ colorRef }}</div>
                     {[/]}
                 {[/]}
                 {[ if isDimensionToken(token.tokenType) ]}
-                    {[ const measureRef = getMeasureTokenReference(token.value) /]}
+                    {[ const measureRef = getMeasureTokenReference(token.value, ds) /]}
                     {[ if measureRef ]}
                         <div class="reference-value">{{ measureRef }}</div>
                     {[/]}
                 {[/]}
                 {[ if isStringToken(token.tokenType) ]}
-                    {[ const textRef = getTextTokenReference(token.value) /]}
+                    {[ const textRef = getTextTokenReference(token.value, ds) /]}
                     {[ if textRef ]}
                         <div class="reference-value">{{ textRef }}</div>
                     {[/]}

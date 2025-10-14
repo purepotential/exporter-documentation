@@ -478,25 +478,85 @@ export function hasTokenValueReference(tokenValue: any): boolean {
 }
 
 /** Get token reference for specific token value types with full path */
-export function getColorTokenReference(colorValue: ColorTokenValue): string | null {
+export function getColorTokenReference(colorValue: ColorTokenValue, ds?: any): string | null {
   if (colorValue.referencedTokenId && colorValue.referencedToken) {
-    return getFullTokenPath(colorValue.referencedToken)
+    return getTokenReferenceWithGroup(colorValue.referencedToken, colorValue.referencedTokenId, ds)
   }
   return null
 }
 
-export function getMeasureTokenReference(measureValue: MeasureTokenValue): string | null {
+export function getMeasureTokenReference(measureValue: MeasureTokenValue, ds?: any): string | null {
   if (measureValue.referencedTokenId && measureValue.referencedToken) {
-    return getFullTokenPath(measureValue.referencedToken)
+    return getTokenReferenceWithGroup(measureValue.referencedToken, measureValue.referencedTokenId, ds)
   }
   return null
 }
 
-export function getTextTokenReference(textValue: TextTokenValue): string | null {
+export function getTextTokenReference(textValue: TextTokenValue, ds?: any): string | null {
   if (textValue.referencedTokenId && textValue.referencedToken) {
-    return getFullTokenPath(textValue.referencedToken)
+    return getTokenReferenceWithGroup(textValue.referencedToken, textValue.referencedTokenId, ds)
   }
   return null
+}
+
+/** Get token reference with proper group hierarchy from design system */
+export function getTokenReferenceWithGroup(token: Token, tokenId: string, ds?: any): string {
+  // If we have access to the design system, try to get the actual token group
+  if (ds) {
+    try {
+      // Try to get all token groups
+      const tokenGroups = ds.tokenGroups ? ds.tokenGroups() : null
+      if (tokenGroups) {
+        const tokenGroup = findTokenGroupByTokenId(tokenId, tokenGroups)
+        if (tokenGroup) {
+          const groupPath = buildTokenGroupPath(tokenGroup)
+          return groupPath ? `${groupPath}/${token.name}` : token.name
+        }
+      }
+    } catch (error) {
+      // Fallback if design system access fails
+      console.warn('Could not access token groups from design system:', error)
+    }
+  }
+
+  // Fallback to the previous path detection method
+  return getFullTokenPath(token)
+}
+
+/** Find the token group that contains a specific token ID */
+function findTokenGroupByTokenId(tokenId: string, tokenGroups: TokenGroup[]): TokenGroup | null {
+  for (const group of tokenGroups) {
+    // Check if token is directly in this group
+    if (group.childrenIds && group.childrenIds.includes(tokenId)) {
+      return group
+    }
+
+    // Recursively check subgroups
+    if (group.subgroups && group.subgroups.length > 0) {
+      const found = findTokenGroupByTokenId(tokenId, group.subgroups)
+      if (found) {
+        return found
+      }
+    }
+  }
+  return null
+}
+
+/** Build the full path of a token group including parent hierarchy */
+function buildTokenGroupPath(tokenGroup: TokenGroup): string {
+  const pathParts: string[] = []
+
+  // Add parent path if exists
+  if (tokenGroup.path && tokenGroup.path.length > 0) {
+    pathParts.push(...tokenGroup.path)
+  }
+
+  // Add current group name if not root
+  if (!tokenGroup.isRoot && tokenGroup.name) {
+    pathParts.push(tokenGroup.name)
+  }
+
+  return pathParts.join('/')
 }
 
 /** Get the full path of a token including its group hierarchy */
@@ -506,18 +566,75 @@ export function getFullTokenPath(token: Token): string {
   if (token.name.includes('/')) {
     return token.name
   }
-  
+
   // Try to get group information from token ID or other properties
   // Token IDs often contain group information
-  if (token.id && token.id.includes('.')) {
-    // Convert dot notation to slash notation (e.g., "general.surface" -> "general/surface")
-    const pathFromId = token.id.replace(/\./g, '/')
-    // If the token name is at the end of the ID path, return the full path
-    if (pathFromId.endsWith(token.name)) {
-      return pathFromId
+  if (token.id && token.id !== token.name) {
+    // Check for different separators in ID
+    if (token.id.includes('.')) {
+      // Convert dot notation to slash notation (e.g., "general.surface" -> "general/surface")
+      return token.id.replace(/\./g, '/')
+    }
+
+    // Check for slash separators in ID
+    if (token.id.includes('/')) {
+      return token.id
+    }
+
+    // Check for dash separators that might indicate grouping
+    if (token.id.includes('-')) {
+      // Convert dashes to slashes for common naming patterns like "general-surface"
+      return token.id.replace(/-/g, '/')
     }
   }
-  
+
+  // Infer group from token type and name patterns
+  // Based on common design token naming conventions
+  const tokenType = token.tokenType.toLowerCase()
+
+  // Map token types to likely group names
+  const typeToGroup: { [key: string]: string } = {
+    'color': 'colors',
+    'dimension': 'spacing',
+    'space': 'spacing',
+    'size': 'sizing',
+    'borderradius': 'radius',
+    'borderwidth': 'borders',
+    'fontsize': 'typography',
+    'fontfamily': 'typography',
+    'fontweight': 'typography',
+    'lineheight': 'typography',
+    'letterspacing': 'typography',
+    'opacity': 'effects',
+    'shadow': 'effects',
+    'blur': 'effects'
+  }
+
+  // Try to get group from token type
+  const inferredGroup = typeToGroup[tokenType]
+  if (inferredGroup) {
+    return `${inferredGroup}/${token.name}`
+  }
+
+  // For color tokens, try to infer semantic grouping
+  if (tokenType === 'color') {
+    if (token.name.includes('surface') || token.name.includes('background') || token.name.includes('bg')) {
+      return `colors/surface/${token.name}`
+    }
+    if (token.name.includes('text') || token.name.includes('on-')) {
+      return `colors/text/${token.name}`
+    }
+    if (token.name.includes('primary') || token.name.includes('secondary') || token.name.includes('accent')) {
+      return `colors/brand/${token.name}`
+    }
+    return `colors/${token.name}`
+  }
+
+  // For spacing tokens with patterns like "spacing-4"
+  if (token.name.includes('spacing') || token.name.includes('gap') || token.name.includes('padding') || token.name.includes('margin')) {
+    return `spacing/${token.name}`
+  }
+
   // Fallback: return just the token name
   return token.name
 }
@@ -527,9 +644,9 @@ export function getTokenReferenceWithContext(tokenValue: any, ds?: any): string 
   if (!tokenValue.referencedTokenId || !tokenValue.referencedToken) {
     return null
   }
-  
+
   const referencedToken = tokenValue.referencedToken
-  
+
   // If we have access to the design system, try to get the full context
   if (ds && ds.tokenGroups) {
     const tokenGroup = findTokenGroup(referencedToken.id, ds.tokenGroups())
@@ -538,7 +655,7 @@ export function getTokenReferenceWithContext(tokenValue: any, ds?: any): string 
       return groupPath ? `${groupPath}/${referencedToken.name}` : referencedToken.name
     }
   }
-  
+
   // Fallback to the basic path extraction
   return getFullTokenPath(referencedToken)
 }
@@ -550,7 +667,7 @@ function findTokenGroup(tokenId: string, tokenGroups: TokenGroup[]): TokenGroup 
     if (group.childrenIds && group.childrenIds.includes(tokenId)) {
       return group
     }
-    
+
     // Recursively check subgroups
     if (group.subgroups && group.subgroups.length > 0) {
       const found = findTokenGroup(tokenId, group.subgroups)
@@ -565,17 +682,17 @@ function findTokenGroup(tokenId: string, tokenGroups: TokenGroup[]): TokenGroup 
 /** Get the full path of a token group including parent hierarchy */
 function getTokenGroupFullPath(tokenGroup: TokenGroup): string {
   const pathParts: string[] = []
-  
+
   // Add parent path if exists
   if (tokenGroup.path && tokenGroup.path.length > 0) {
     pathParts.push(...tokenGroup.path)
   }
-  
+
   // Add current group name if not root
   if (!tokenGroup.isRoot && tokenGroup.name) {
     pathParts.push(tokenGroup.name)
   }
-  
+
   return pathParts.join('/')
 }
 
@@ -723,12 +840,12 @@ export function formatReferenceList(references: string[]): string {
 export function generateEnhancedTokenDescription(token: Token): string {
   const resolvedValue = displayTokenWithReference(token, { showReference: false })
   const hasRef = hasTokenValueReference((token as any).value)
-  
+
   let description = token.description || ""
-  
+
   // Add resolved value info
   const valueInfo = `Resolved value: ${resolvedValue}`
-  
+
   // Add reference info
   let referenceInfo = ""
   if (hasRef) {
@@ -751,10 +868,10 @@ export function generateEnhancedTokenDescription(token: Token): string {
         }
     }
   }
-  
+
   // Combine description with value and reference info
   const enhancedInfo = `${valueInfo}${referenceInfo}`
-  
+
   if (description) {
     return `${description} | ${enhancedInfo}`
   } else {
@@ -767,7 +884,7 @@ export function parseTokenIds(tokenIdsString: string): string[] {
   if (!tokenIdsString || tokenIdsString.trim() === "") {
     return []
   }
-  
+
   return tokenIdsString
     .split(",")
     .map(id => id.trim())
@@ -778,13 +895,13 @@ export function parseTokenIds(tokenIdsString: string): string[] {
 export function getTokensFromIds(tokenIdsString: string, ds: any): Token[] {
   const tokenIds = parseTokenIds(tokenIdsString)
   const tokens: Token[] = []
-  
+
   for (const tokenId of tokenIds) {
     const token = ds.tokenById(tokenId)
     if (token) {
       tokens.push(token)
     }
   }
-  
+
   return tokens
 }
