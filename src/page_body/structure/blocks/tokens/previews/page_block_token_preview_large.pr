@@ -2,6 +2,8 @@
 {[ const themes = context.themes /]}
 
 {* todo: this needs some refactoring *}
+{[ const configuration = exportConfiguration() /]}
+{[ const showReferences = configuration.blockConfigTokensShowReferences /]}
 {[ if token.tokenType.equals("Color") ]}
     {[ let hexValue = tokenValueToHex(token.value) /]}
     <div class="preview checkered-background-light">
@@ -182,6 +184,6 @@
     <div class="preview small-text bordered no-footer">
         {[ inject "page_block_token_reference_badge" context token /]}
         {[ inject "page_block_token_themes_badge" context themes /]}
-        {{ measureValueToReadableUnit(token.value) }}
+        {{ measureValueToReadableUnit(token.value, showReferences) }}
     </div>
 {[/]}

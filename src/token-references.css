@@ -50,6 +50,38 @@
   }
 }
 
+/* Contrast grid specific styles */
+.token-references-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 0.625rem;
+  padding: 0.125rem 0.25rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.swatch:hover .token-references-overlay {
+  opacity: 1;
+}
+
+.token-references-overlay .refs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.token-references-overlay .bg-ref,
+.token-references-overlay .text-ref {
+  font-family: var(--font-mono, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .token-reference {
@@ -67,5 +99,10 @@
   
   .token-complex-references {
     border-top-color: var(--color-border-light-dark, #4b5563);
+  }
+  
+  .token-references-overlay {
+    background: rgba(255, 255, 255, 0.9);
+    color: black;
   }
 }

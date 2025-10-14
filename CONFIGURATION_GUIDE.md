@@ -149,6 +149,28 @@ You could extend this by adding block-level properties to allow per-block overri
 - **Shadow tokens**: Shows color references in shadow values
 - **Gradient tokens**: Basic support (can be enhanced)
 
+## Files Updated for Token Reference Support
+
+### Template Files Updated:
+1. **`src/page_body/structure/blocks/tokens/values/page_block_token_value.pr`** - Main token value display with reference support
+2. **`src/page_body/structure/blocks/tokens/variants/page_block_token_variant_contrast_grid.pr`** - Contrast grid variant with reference overlays
+3. **`src/page_body/structure/blocks/tokens/previews/page_block_token_preview_small.pr`** - Small preview with reference support for displayed values
+4. **`src/page_body/structure/blocks/tokens/previews/page_block_token_preview_large.pr`** - Large preview with reference support for displayed values
+
+### Configuration Files Updated:
+1. **`exporter.json`** - Added global configuration options for token references
+2. **`src/token-references.css`** - Added CSS styles for reference display including contrast grid overlays
+
+### TypeScript Files Updated:
+1. **`typescript/src/doc_functionality/tokens.ts`** - Enhanced with comprehensive reference extraction and display functions
+
+### Variant Coverage:
+- ✅ **Table variant** - Uses `page_block_token_value` (updated)
+- ✅ **Grid variants** (1-4 columns) - Uses `page_block_token_value` (updated) 
+- ✅ **Stack variants** - Uses `page_block_token_value` (updated)
+- ✅ **Contrast grid variant** - Direct updates with hover overlays for references
+- ✅ **All preview files** - Updated for user-visible values (styling values remain unchanged)
+
 ## Implementation Notes
 
 1. **Backward Compatibility**: All changes are backward compatible. Existing documentation will continue to work without references displayed.
@@ -158,6 +180,8 @@ You could extend this by adding block-level properties to allow per-block overri
 3. **Theming**: The CSS classes support both light and dark modes and are responsive.
 
 4. **Extensibility**: The system is designed to be easily extended for additional token types or reference styles.
+
+5. **Comprehensive Coverage**: All token display variants now support reference display when enabled.
 
 ## Testing the Configuration
 

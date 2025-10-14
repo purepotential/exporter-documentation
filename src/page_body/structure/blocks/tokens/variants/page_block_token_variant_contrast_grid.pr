@@ -2,6 +2,7 @@
 {[ const tokenIds = context.tokenIds /]}
 {[ const blockId = context.blockId /]}
 {[ const configuration = exportConfiguration() /]}
+{[ const showReferences = configuration.blockConfigTokensShowReferences /]}
 {[ const firstToken = ds.tokenById(tokenIds[0]) /]}
 
 {* Let's check if the color type are colors (all tokens are the same type always, so checking it on the first token is enough) *}
@@ -20,7 +21,7 @@
             {[ const token = ds.tokenById(tokenId) /]}
             {[ let classnames = returnSwatchClassnames(token.value) /]}
 
-            <div class="cell header-row--cell"><div class="swatch checkered-background swatch-header" title="{[ if token.parent.name ]}{{token.parent.name}} / {[/]}{{token.name}}"><div class="color-fill {{ returnSwatchClassnames(token.value) }}" style="background:{{getFormattedColor(token.value)}};">{{getFormattedColor(token.value)}}</div></div></div>
+            <div class="cell header-row--cell"><div class="swatch checkered-background swatch-header" title="{[ if token.parent.name ]}{{token.parent.name}} / {[/]}{{token.name}}"><div class="color-fill {{ returnSwatchClassnames(token.value) }}" style="background:{{getFormattedColor(token.value)}};">{{getFormattedColor(token.value, false, null, showReferences)}}</div></div></div>
           {[/]} 
         </div>
       </div>
@@ -36,7 +37,7 @@
                     <div class="labels">
                     
                       <div class="name">{[ if token.parent.name ]}{{token.parent.name}} / {[/]}{{token.name}}</div>
-                      <div class="value">{{getFormattedColor(token.value)}}</div>
+                      <div class="value">{{getFormattedColor(token.value, false, null, showReferences)}}</div>
                     </div>
                   </div>
                 </div>
@@ -59,6 +60,18 @@
                         <div class="color-fill {{ returnSwatchClassnames(token.value) }}" style="background:{{getFormattedColor(token.value)}};color:{{getFormattedColor(tokenInner.value)}};">
                           <div class="label">Text</div>
                           <div class="contrast">{[ inject "component_contrast_badge" context getColorContrastRatio(token.value, tokenInner.value) /]}</div>
+                          {[ if showReferences ]}
+                            <div class="token-references-overlay">
+                              {[ const bgRef = getColorTokenReference(token.value) /]}
+                              {[ const textRef = getColorTokenReference(tokenInner.value) /]}
+                              {[ if (bgRef || textRef) ]}
+                                <div class="refs">
+                                  {[ if bgRef ]}<span class="bg-ref">BG: {{bgRef}}</span>{[/]}
+                                  {[ if textRef ]}<span class="text-ref">Text: {{textRef}}</span>{[/]}
+                                </div>
+                              {[/]}
+                            </div>
+                          {[/]}
                         </div>
                       </div>
                     </div>
