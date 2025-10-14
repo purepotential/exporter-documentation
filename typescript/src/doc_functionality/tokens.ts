@@ -499,42 +499,83 @@ export function getTextTokenReference(textValue: TextTokenValue, ds?: any): stri
   return null
 }
 
-/** Get token reference with proper group hierarchy from design system */
+/** Get token reference with proper group hierarchy using existing group functions */
 export function getTokenReferenceWithGroup(token: Token, tokenId: string, ds?: any): string {
-  // If we have access to the design system, try to get the actual token group
-  if (ds && token && tokenId) {
-    try {
-      // Method 1: Get the full token and find its group using the SDK structure
-      const fullToken = ds.tokenById ? ds.tokenById(tokenId) : null
-      if (fullToken) {
-        // Try to get the token group that contains this token
-        const tokenGroups = ds.tokenGroups ? ds.tokenGroups() : null
-        if (tokenGroups) {
-          const tokenGroup = findTokenGroupContainingToken(tokenId, tokenGroups)
-          if (tokenGroup) {
-            const groupPath = buildTokenGroupPathFromSDK(tokenGroup)
-            return groupPath ? `${groupPath}/${token.name}` : token.name
-          }
-        }
-      }
+  if (!token) {
+    return 'Unknown Token'
+  }
 
-      // Method 2: Try using token groups directly
-      const tokenGroups = ds.tokenGroups ? ds.tokenGroups() : null
-      if (tokenGroups) {
-        const tokenGroup = findTokenGroupByTokenId(tokenId, tokenGroups)
-        if (tokenGroup) {
-          const groupPath = buildTokenGroupPathFromSDK(tokenGroup)
+  // Try to use ds methods to get group information first
+  try {
+    if (ds && tokenId) {
+      // Check if there's a groupByTokenId method (reverse of tokensByGroupId)
+      if (ds.groupByTokenId) {
+        const group = ds.groupByTokenId(tokenId)
+        if (group) {
+          const groupPath = fullTokenGroupName(group)
           return groupPath ? `${groupPath}/${token.name}` : token.name
         }
       }
 
-    } catch (error) {
-      // Fallback if design system access fails - silently continue
+      // Check if there's a tokenGroupById method
+      if (ds.tokenGroupById) {
+        // First get the full token to see if it has a groupId
+        const fullToken = ds.tokenById(tokenId) as any
+        if (fullToken && fullToken.groupId) {
+          const group = ds.tokenGroupById(fullToken.groupId)
+          if (group) {
+            const groupPath = fullTokenGroupName(group)
+            return groupPath ? `${groupPath}/${token.name}` : token.name
+          }
+        }
+      }
     }
+
+    // Try to use existing group functions if the token has group information
+    const tokenWithGroup = token as any
+
+    // Try different possible group property names that might exist on the token
+    if (tokenWithGroup.parent && typeof tokenWithGroup.parent === 'object') {
+      // If token has a parent group, use fullTokenGroupName
+      const groupPath = fullTokenGroupName(tokenWithGroup.parent)
+      return groupPath ? `${groupPath}/${token.name}` : token.name
+    }
+
+    if (tokenWithGroup.group && typeof tokenWithGroup.group === 'object') {
+      // If token has a group property, use fullTokenGroupName
+      const groupPath = fullTokenGroupName(tokenWithGroup.group)
+      return groupPath ? `${groupPath}/${token.name}` : token.name
+    }
+
+    if (tokenWithGroup.tokenGroup && typeof tokenWithGroup.tokenGroup === 'object') {
+      // If token has a tokenGroup property, use fullTokenGroupName
+      const groupPath = fullTokenGroupName(tokenWithGroup.tokenGroup)
+      return groupPath ? `${groupPath}/${token.name}` : token.name
+    }
+
+    // Try to get the full token from ds and check if it has group info
+    if (ds && ds.tokenById && tokenId) {
+      const fullToken = ds.tokenById(tokenId) as any
+      if (fullToken && fullToken !== token) {
+        // Check if the full token has group information
+        if (fullToken.parent && typeof fullToken.parent === 'object') {
+          const groupPath = fullTokenGroupName(fullToken.parent)
+          return groupPath ? `${groupPath}/${token.name}` : token.name
+        }
+
+        if (fullToken.group && typeof fullToken.group === 'object') {
+          const groupPath = fullTokenGroupName(fullToken.group)
+          return groupPath ? `${groupPath}/${token.name}` : token.name
+        }
+      }
+    }
+
+  } catch (error) {
+    // Fallback if group access fails - silently continue
   }
 
-  // Fallback: just return the token name (better than UUID)
-  return token?.name || tokenId
+  // Simple fallback: just return the token name
+  return token.name
 }
 
 /** Get the path from a token's parent hierarchy */
@@ -619,81 +660,7 @@ function buildTokenGroupPath(tokenGroup: TokenGroup): string {
 
 /** Get the full path of a token including its group hierarchy */
 export function getFullTokenPath(token: Token): string {
-  // Try to extract group information from token name if it contains slashes
-  // Many design systems use naming conventions like "general/surface" or "colors/primary/500"
-  if (token.name.includes('/')) {
-    return token.name
-  }
-
-  // Try to get group information from token ID or other properties
-  // Token IDs often contain group information
-  if (token.id && token.id !== token.name) {
-    // Check for different separators in ID
-    if (token.id.includes('.')) {
-      // Convert dot notation to slash notation (e.g., "general.surface" -> "general/surface")
-      return token.id.replace(/\./g, '/')
-    }
-
-    // Check for slash separators in ID
-    if (token.id.includes('/')) {
-      return token.id
-    }
-
-    // Check for dash separators that might indicate grouping
-    if (token.id.includes('-')) {
-      // Convert dashes to slashes for common naming patterns like "general-surface"
-      return token.id.replace(/-/g, '/')
-    }
-  }
-
-  // Infer group from token type and name patterns
-  // Based on common design token naming conventions
-  const tokenType = token.tokenType.toLowerCase()
-
-  // Map token types to likely group names
-  const typeToGroup: { [key: string]: string } = {
-    'color': 'colors',
-    'dimension': 'spacing',
-    'space': 'spacing',
-    'size': 'sizing',
-    'borderradius': 'radius',
-    'borderwidth': 'borders',
-    'fontsize': 'typography',
-    'fontfamily': 'typography',
-    'fontweight': 'typography',
-    'lineheight': 'typography',
-    'letterspacing': 'typography',
-    'opacity': 'effects',
-    'shadow': 'effects',
-    'blur': 'effects'
-  }
-
-  // Try to get group from token type
-  const inferredGroup = typeToGroup[tokenType]
-  if (inferredGroup) {
-    return `${inferredGroup}/${token.name}`
-  }
-
-  // For color tokens, try to infer semantic grouping
-  if (tokenType === 'color') {
-    if (token.name.includes('surface') || token.name.includes('background') || token.name.includes('bg')) {
-      return `colors/surface/${token.name}`
-    }
-    if (token.name.includes('text') || token.name.includes('on-')) {
-      return `colors/text/${token.name}`
-    }
-    if (token.name.includes('primary') || token.name.includes('secondary') || token.name.includes('accent')) {
-      return `colors/brand/${token.name}`
-    }
-    return `colors/${token.name}`
-  }
-
-  // For spacing tokens with patterns like "spacing-4"
-  if (token.name.includes('spacing') || token.name.includes('gap') || token.name.includes('padding') || token.name.includes('margin')) {
-    return `spacing/${token.name}`
-  }
-
-  // Fallback: return just the token name
+  // Only return the token name - no more inferring
   return token.name
 }
 
@@ -714,8 +681,8 @@ export function getTokenReferenceWithContext(tokenValue: any, ds?: any): string 
     }
   }
 
-  // Fallback to the basic path extraction
-  return getFullTokenPath(referencedToken)
+  // Simple fallback: just return the token name
+  return referencedToken.name
 }
 
 /** Find the token group that contains a specific token */
