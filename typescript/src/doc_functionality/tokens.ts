@@ -681,3 +681,30 @@ export function generateEnhancedTokenDescription(token: Token): string {
     return enhancedInfo
   }
 }
+
+/** Helper function to parse comma-separated token IDs */
+export function parseTokenIds(tokenIdsString: string): string[] {
+  if (!tokenIdsString || tokenIdsString.trim() === "") {
+    return []
+  }
+  
+  return tokenIdsString
+    .split(",")
+    .map(id => id.trim())
+    .filter(id => id !== "")
+}
+
+/** Helper function to get tokens from comma-separated IDs */
+export function getTokensFromIds(tokenIdsString: string, ds: any): Token[] {
+  const tokenIds = parseTokenIds(tokenIdsString)
+  const tokens: Token[] = []
+  
+  for (const tokenId of tokenIds) {
+    const token = ds.tokenById(tokenId)
+    if (token) {
+      tokens.push(token)
+    }
+  }
+  
+  return tokens
+}

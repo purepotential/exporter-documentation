@@ -4,15 +4,10 @@
 
 {* Get tokens from either tokenIds or tokenGroupId *}
 {[ let tokens = [] /]}
-{[ if block.tokenIds && block.tokenIds.length > 0 ]}
-    {[ for tokenId in block.tokenIds ]}
-        {[ const token = ds.tokenById(tokenId) /]}
-        {[ if token ]}
-            {[ tokens.push(token) /]}
-        {[/]}
-    {[/]}
-{[ elseif block.tokenGroupId ]}
-    {[ tokens = ds.tokensByGroupId(block.tokenGroupId) /]}
+{[ if block.tokenIds && block.tokenIds.trim() !== "" ]}
+    {[ tokens = getTokensFromIds(block.tokenIds, ds) /]}
+{[ elseif block.tokenGroupId && block.tokenGroupId.trim() !== "" ]}
+    {[ tokens = ds.tokensByGroupId(block.tokenGroupId.trim()) /]}
 {[/]}
 
 {* Configuration *}

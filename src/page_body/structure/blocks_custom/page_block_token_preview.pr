@@ -2,8 +2,8 @@
 {[ const block = context /]}
 {[ const configuration = exportConfiguration() /]}
 
-{[ if block.tokenId ]}
-    {[ const token = ds.tokenById(block.tokenId) /]}
+{[ if block.tokenId && block.tokenId.trim() !== "" ]}
+    {[ const token = ds.tokenById(block.tokenId.trim()) /]}
     {[ const showReferences = block.showReferences !== undefined ? block.showReferences : true /]}
     {[ const showResolvedValue = block.showResolvedValue !== undefined ? block.showResolvedValue : true /]}
     {[ const displayStyle = block.displayStyle || "Inline" /]}

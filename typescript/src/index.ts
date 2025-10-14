@@ -75,7 +75,9 @@ import {
   formatReferenceList,
   createSimpleTokenReference,
   createDetailedTokenReference,
-  generateEnhancedTokenDescription
+  generateEnhancedTokenDescription,
+  parseTokenIds,
+  getTokensFromIds
 } from './doc_functionality/tokens';
 import {
   assetUrl,
@@ -246,6 +248,8 @@ Pulsar.registerFunction('formatReferenceList', formatReferenceList);
 Pulsar.registerFunction('createSimpleTokenReference', createSimpleTokenReference);
 Pulsar.registerFunction('createDetailedTokenReference', createDetailedTokenReference);
 Pulsar.registerFunction('generateEnhancedTokenDescription', generateEnhancedTokenDescription);
+Pulsar.registerFunction('parseTokenIds', parseTokenIds);
+Pulsar.registerFunction('getTokensFromIds', getTokensFromIds);
 
 /* Markdown */
 Pulsar.registerFunction('markdownToHTML', markdownToHTML);
