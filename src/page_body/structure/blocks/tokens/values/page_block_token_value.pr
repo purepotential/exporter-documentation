@@ -4,15 +4,9 @@
 {[ const referenceStyle = configuration.blockConfigTokensReferenceStyle /]}
 
 {* Debug: Show configuration status *}
-{[ if showReferences ]}
-    <div class="token-reference-status" style="background: #e8f5e8; padding: 2px 4px; font-size: 0.7em; margin-bottom: 4px;">
-        ✓ References enabled ({{ referenceStyle }})
-    </div>
-{[ else ]}
-    <div class="token-reference-status" style="background: #f5e8e8; padding: 2px 4px; font-size: 0.7em; margin-bottom: 4px;">
-        ✗ References disabled
-    </div>
-{[/]}
+<div class="token-reference-status" style="background: {{ showReferences ? '#e8f5e8' : '#f5e8e8' }}; padding: 4px 8px; font-size: 0.8em; margin-bottom: 8px; border-radius: 4px;">
+    {{ showReferences ? '✓ References enabled' : '✗ References disabled' }} ({{ referenceStyle }})
+</div>
 
 <div class="token-value-container">
     <span class="token-value">
