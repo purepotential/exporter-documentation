@@ -930,3 +930,45 @@ export function getTokensFromIds(tokenIdsString: string, ds: any): Token[] {
 
   return tokens
 }
+
+/** Helper function to build theme label from themes array */
+export function buildThemeLabel(themes: any[]): string {
+  if (!themes || themes.length === 0) {
+    return ""
+  }
+  
+  return themes.map(theme => theme.name).join(", ")
+}
+
+/** Helper function to get themed token reference with label */
+export function getThemedTokenReference(token: Token, themes: any[], ds?: any): string {
+  if (!token) {
+    return ""
+  }
+  
+  // Get the reference based on token type
+  let reference = ""
+  
+  if (token.tokenType === "Color") {
+    const colorToken = token as ColorToken
+    reference = getColorTokenReference(colorToken.value, ds) || ""
+  } else if (isDimensionToken(token.tokenType)) {
+    const measureToken = token as MeasureToken
+    reference = getMeasureTokenReference(measureToken.value, ds) || ""
+  } else if (isStringToken(token.tokenType)) {
+    const textToken = token as TextToken
+    reference = getTextTokenReference(textToken.value, ds) || ""
+  }
+  
+  if (!reference) {
+    return ""
+  }
+  
+  // If we have themes, add the theme label
+  if (themes && themes.length > 0) {
+    const themeLabel = buildThemeLabel(themes)
+    return `${themeLabel}: ${reference}`
+  }
+  
+  return reference
+}

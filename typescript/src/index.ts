@@ -77,7 +77,9 @@ import {
   createDetailedTokenReference,
   generateEnhancedTokenDescription,
   parseTokenIds,
-  getTokensFromIds
+  getTokensFromIds,
+  buildThemeLabel,
+  getThemedTokenReference
 } from './doc_functionality/tokens';
 import {
   assetUrl,
@@ -250,6 +252,8 @@ Pulsar.registerFunction('createDetailedTokenReference', createDetailedTokenRefer
 Pulsar.registerFunction('generateEnhancedTokenDescription', generateEnhancedTokenDescription);
 Pulsar.registerFunction('parseTokenIds', parseTokenIds);
 Pulsar.registerFunction('getTokensFromIds', getTokensFromIds);
+Pulsar.registerFunction('buildThemeLabel', buildThemeLabel);
+Pulsar.registerFunction('getThemedTokenReference', getThemedTokenReference);
 
 /* Markdown */
 Pulsar.registerFunction('markdownToHTML', markdownToHTML);

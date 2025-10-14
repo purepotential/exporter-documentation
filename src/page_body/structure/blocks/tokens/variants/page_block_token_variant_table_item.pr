@@ -41,22 +41,35 @@
             {[ const showReferences = configuration.blockConfigTokensShowReferences /]}
             
             {[ if showReferences ]}
-                {[ if token.tokenType.equals("Color") ]}
-                    {[ const colorRef = getColorTokenReference(token.value, ds) /]}
-                    {[ if colorRef ]}
-                        <div class="reference-value">{{ colorRef }}</div>
+                {[ if (block.swatches && block.swatches.length > 1) ]}
+                    {* Multiple themes - show reference for each theme *}
+                    {[ for swatch in block.swatches ]}
+                        {[ const themedToken = ds.tokensByApplyingThemes([token.id], swatch.selectedThemeIds) /]}
+                        {[ const themes = ds.themesByIds(swatch.selectedThemeIds) /]}
+                        {[ const themedRef = getThemedTokenReference(themedToken[0], themes, ds) /]}
+                        {[ if themedRef ]}
+                            <div class="reference-value">{{ themedRef }}</div>
+                        {[/]}
                     {[/]}
-                {[/]}
-                {[ if isDimensionToken(token.tokenType) ]}
-                    {[ const measureRef = getMeasureTokenReference(token.value, ds) /]}
-                    {[ if measureRef ]}
-                        <div class="reference-value">{{ measureRef }}</div>
+                {[ else ]}
+                    {* Single theme or no themes - show simple reference *}
+                    {[ if token.tokenType.equals("Color") ]}
+                        {[ const colorRef = getColorTokenReference(token.value, ds) /]}
+                        {[ if colorRef ]}
+                            <div class="reference-value">{{ colorRef }}</div>
+                        {[/]}
                     {[/]}
-                {[/]}
-                {[ if isStringToken(token.tokenType) ]}
-                    {[ const textRef = getTextTokenReference(token.value, ds) /]}
-                    {[ if textRef ]}
-                        <div class="reference-value">{{ textRef }}</div>
+                    {[ if isDimensionToken(token.tokenType) ]}
+                        {[ const measureRef = getMeasureTokenReference(token.value, ds) /]}
+                        {[ if measureRef ]}
+                            <div class="reference-value">{{ measureRef }}</div>
+                        {[/]}
+                    {[/]}
+                    {[ if isStringToken(token.tokenType) ]}
+                        {[ const textRef = getTextTokenReference(token.value, ds) /]}
+                        {[ if textRef ]}
+                            <div class="reference-value">{{ textRef }}</div>
+                        {[/]}
                     {[/]}
                 {[/]}
             {[/]}
