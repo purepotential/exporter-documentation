@@ -6,7 +6,7 @@
   "organization": "Supernova",
   "source_dir": "src",
   "assets_dir": "assets",
-  "version": "5.6.1",
+  "version": "5.6.2",
   "usesBrands": false,
   "config": {
     "sources": "sources.json",
@@ -792,6 +792,7 @@
           {
             "key": "tokenId",
             "type": "string",
+            "default": "",
             "label": "Token ID",
             "description": "Enter the token ID to display"
           },
@@ -831,12 +832,14 @@
           {
             "key": "tokenIds",
             "type": "string",
+            "default": "",
             "label": "Token IDs",
             "description": "Enter token IDs separated by commas (e.g., token1,token2,token3)"
           },
           {
             "key": "tokenGroupId",
             "type": "string",
+            "default": "",
             "label": "Token Group ID",
             "description": "Alternative: Enter a token group ID to display all tokens in that group"
           },
