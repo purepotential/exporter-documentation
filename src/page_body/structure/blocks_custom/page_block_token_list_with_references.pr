@@ -53,10 +53,10 @@
                                         {[ const fontSizeRef = getMeasureTokenReference(token.value.fontSize) /]}
                                         {[ const lineHeightRef = (token.value.lineHeight ? getMeasureTokenReference(token.value.lineHeight) : null) /]}
                                         {[ let refCount = 0 /]}
-                                        {[ if fontFamilyRef ]}{{ refCount = refCount + 1 }}{[/]}
-                                        {[ if fontWeightRef ]}{{ refCount = refCount + 1 }}{[/]}
-                                        {[ if fontSizeRef ]}{{ refCount = refCount + 1 }}{[/]}
-                                        {[ if lineHeightRef ]}{{ refCount = refCount + 1 }}{[/]}
+                                        {[ if fontFamilyRef ]}{[ refCount = refCount + 1 /]}{[/]}
+                                        {[ if fontWeightRef ]}{[ refCount = refCount + 1 /]}{[/]}
+                                        {[ if fontSizeRef ]}{[ refCount = refCount + 1 /]}{[/]}
+                                        {[ if lineHeightRef ]}{[ refCount = refCount + 1 /]}{[/]}
                                         
                                         {[ if refCount > 0 ]}
                                             <div class="complex-references">
@@ -75,7 +75,7 @@
                                         {[ let shadowRefCount = 0 /]}
                                         {[ for shadowValue in token.value ]}
                                             {[ const colorRef = getColorTokenReference(shadowValue.color) /]}
-                                            {[ if colorRef ]}{{ shadowRefCount = shadowRefCount + 1 }}{[/]}
+                                            {[ if colorRef ]}{[ shadowRefCount = shadowRefCount + 1 /]}{[/]}
                                         {[/]}
                                         
                                         {[ if shadowRefCount > 0 ]}
@@ -96,7 +96,7 @@
                                         {[ for gradientValue in token.value ]}
                                             {[ for stop in gradientValue.stops ]}
                                                 {[ const colorRef = getColorTokenReference(stop.color) /]}
-                                                {[ if colorRef ]}{{ gradientRefCount = gradientRefCount + 1 }}{[/]}
+                                                {[ if colorRef ]}{[ gradientRefCount = gradientRefCount + 1 /]}{[/]}
                                             {[/]}
                                         {[/]}
                                         
@@ -151,29 +151,23 @@
                                     </div>
                                 {[ elseif token.tokenType.equals("Shadow") ]}
                                     <div class="reference-badges">
-                                        {[ let hasShadowRefs = false /]}
                                         {[ for shadowValue in token.value ]}
                                             {[ const colorRef = getColorTokenReference(shadowValue.color) /]}
                                             {[ if colorRef ]}
-                                                {{ hasShadowRefs = true }}
                                                 <div class="reference-badge small">Shadow {{ loop.index + 1 }}: {{ colorRef }}</div>
                                             {[/]}
                                         {[/]}
-                                        {[ if !hasShadowRefs ]}<div class="reference-badge">Base token</div>{[/]}
                                     </div>
                                 {[ elseif token.tokenType.equals("Gradient") ]}
                                     <div class="reference-badges">
-                                        {[ let hasGradientRefs = false /]}
                                         {[ for gradientValue in token.value ]}
                                             {[ for stop in gradientValue.stops ]}
                                                 {[ const colorRef = getColorTokenReference(stop.color) /]}
                                                 {[ if colorRef ]}
-                                                    {{ hasGradientRefs = true }}
                                                     <div class="reference-badge small">Stop: {{ colorRef }}</div>
                                                 {[/]}
                                             {[/]}
                                         {[/]}
-                                        {[ if !hasGradientRefs ]}<div class="reference-badge">Base token</div>{[/]}
                                     </div>
                                 {[ elseif isDimensionToken(token.tokenType) ]}
                                     {[ const measureRef = getMeasureTokenReference(token.value) /]}
@@ -219,29 +213,23 @@
                                     </div>
                                 {[ elseif token.tokenType.equals("Shadow") ]}
                                     <div class="reference-list">
-                                        {[ let hasShadowRefs = false /]}
                                         {[ for shadowValue in token.value ]}
                                             {[ const colorRef = getColorTokenReference(shadowValue.color) /]}
                                             {[ if colorRef ]}
-                                                {{ hasShadowRefs = true }}
                                                 <span class="reference-item">Shadow {{ loop.index + 1 }}: {{ colorRef }}</span>
                                             {[/]}
                                         {[/]}
-                                        {[ if !hasShadowRefs ]}<span class="reference-item">Base</span>{[/]}
                                     </div>
                                 {[ elseif token.tokenType.equals("Gradient") ]}
                                     <div class="reference-list">
-                                        {[ let hasGradientRefs = false /]}
                                         {[ for gradientValue in token.value ]}
                                             {[ for stop in gradientValue.stops ]}
                                                 {[ const colorRef = getColorTokenReference(stop.color) /]}
                                                 {[ if colorRef ]}
-                                                    {{ hasGradientRefs = true }}
                                                     <span class="reference-item">Stop: {{ colorRef }}</span>
                                                 {[/]}
                                             {[/]}
                                         {[/]}
-                                        {[ if !hasGradientRefs ]}<span class="reference-item">Base</span>{[/]}
                                     </div>
                                 {[ elseif isDimensionToken(token.tokenType) ]}
                                     <div class="reference-list">

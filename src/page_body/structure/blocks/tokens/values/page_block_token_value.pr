@@ -32,42 +32,30 @@
     <div class="shadow-token">
         <div class="shadow-main">{{ shadowDescription(token) }}</div>
         {[ if showReferences ]}
-            {[ let shadowRefs = [] /]}
-            {[ for shadowValue in token.value ]}
-                {[ const colorRef = getColorTokenReference(shadowValue.color) /]}
-                {[ if colorRef ]}
-                    {[ shadowRefs.push("Shadow " + (loop.index + 1) + " Color: " + colorRef) /]}
-                {[/]}
-            {[/]}
-            {[ if shadowRefs.length > 0 ]}
-                <div class="shadow-references">
-                    {[ for ref in shadowRefs ]}
-                        <span class="ref-item">{{ ref }}</span>
+            <div class="shadow-references">
+                {[ for shadowValue in token.value ]}
+                    {[ const colorRef = getColorTokenReference(shadowValue.color) /]}
+                    {[ if colorRef ]}
+                        <span class="ref-item">Shadow {{ loop.index + 1 }} Color: {{ colorRef }}</span>
                     {[/]}
-                </div>
-            {[/]}
+                {[/]}
+            </div>
         {[/]}
     </div>
 {[ elseif token.tokenType.equals("Gradient") ]}
     <div class="gradient-token">
         <div class="gradient-main">{{ gradientDescription(token) }}</div>
         {[ if showReferences ]}
-            {[ let gradientRefs = [] /]}
-            {[ for gradientValue in token.value ]}
-                {[ for stop in gradientValue.stops ]}
-                    {[ const colorRef = getColorTokenReference(stop.color) /]}
-                    {[ if colorRef ]}
-                        {[ gradientRefs.push("Stop Color: " + colorRef) /]}
+            <div class="gradient-references">
+                {[ for gradientValue in token.value ]}
+                    {[ for stop in gradientValue.stops ]}
+                        {[ const colorRef = getColorTokenReference(stop.color) /]}
+                        {[ if colorRef ]}
+                            <span class="ref-item">Stop Color: {{ colorRef }}</span>
+                        {[/]}
                     {[/]}
                 {[/]}
-            {[/]}
-            {[ if gradientRefs.length > 0 ]}
-                <div class="gradient-references">
-                    {[ for ref in gradientRefs ]}
-                        <span class="ref-item">{{ ref }}</span>
-                    {[/]}
-                </div>
-            {[/]}
+            </div>
         {[/]}
     </div>
 {[ elseif isDimensionToken(token.tokenType) ]}
