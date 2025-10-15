@@ -1,76 +1,15 @@
 {[ let token = context /]}
-{[ let showReferences = ds.blockConfigTokensShowReferences /]}
 
 {* Basic value display for left column with proper styling *}
 <div class="token-value">
 {[ if token.tokenType.equals("Color") ]}
-    {{ getFormattedColor(token.value, false, null, showReferences) }}
+    {{ getFormattedColor(token.value, false, null, false) }}
 {[ elseif token.tokenType.equals("Typography") ]}
-    <div class="typography-token">
-        <div class="typography-main">{{ typographyDescription(token) }}</div>
-        {[ if showReferences ]}
-            {[ const fontFamilyRef = getTextTokenReference(token.value.fontFamily) /]}
-            {[ const fontWeightRef = getTextTokenReference(token.value.fontWeight) /]}
-            {[ const fontSizeRef = getMeasureTokenReference(token.value.fontSize) /]}
-            {[ const lineHeightRef = (token.value.lineHeight ? getMeasureTokenReference(token.value.lineHeight) : null) /]}
-            {[ const letterSpacingRef = getMeasureTokenReference(token.value.letterSpacing) /]}
-            {[ const paragraphSpacingRef = getMeasureTokenReference(token.value.paragraphSpacing) /]}
-            
-            {[ if (fontFamilyRef || fontWeightRef || fontSizeRef || lineHeightRef || letterSpacingRef || paragraphSpacingRef) ]}
-                <div class="typography-references">
-                    {[ if fontFamilyRef ]}<span class="ref-item">Font: {{ fontFamilyRef }}</span>{[/]}
-                    {[ if fontWeightRef ]}<span class="ref-item">Weight: {{ fontWeightRef }}</span>{[/]}
-                    {[ if fontSizeRef ]}<span class="ref-item">Size: {{ fontSizeRef }}</span>{[/]}
-                    {[ if lineHeightRef ]}<span class="ref-item">Line Height: {{ lineHeightRef }}</span>{[/]}
-                    {[ if letterSpacingRef ]}<span class="ref-item">Letter Spacing: {{ letterSpacingRef }}</span>{[/]}
-                    {[ if paragraphSpacingRef ]}<span class="ref-item">Paragraph Spacing: {{ paragraphSpacingRef }}</span>{[/]}
-                </div>
-            {[/]}
-        {[/]}
-    </div>
-{[ elseif token.tokenType.equals("Shadow") ]}
-    <div class="shadow-token">
-        <div class="shadow-main">{{ shadowDescription(token) }}</div>
-        {[ if showReferences ]}
-            <div class="shadow-references">
-                {[ for shadowValue in token.value ]}
-                    {[ const colorRef = getColorTokenReference(shadowValue.color) /]}
-                    {[ if colorRef ]}
-                        <span class="ref-item">Shadow {{ loop.index + 1 }} Color: {{ colorRef }}</span>
-                    {[/]}
-                {[/]}
-            </div>
-        {[/]}
-    </div>
-{[ elseif token.tokenType.equals("Gradient") ]}
-    <div class="gradient-token">
-        <div class="gradient-main">{{ gradientDescription(token) }}</div>
-        {[ if showReferences ]}
-            <div class="gradient-references">
-                {[ for gradientValue in token.value ]}
-                    {[ for stop in gradientValue.stops ]}
-                        {[ const colorRef = getColorTokenReference(stop.color) /]}
-                        {[ if colorRef ]}
-                            <span class="ref-item">Stop Color: {{ colorRef }}</span>
-                        {[/]}
-                    {[/]}
-                {[/]}
-            </div>
-        {[/]}
-    </div>
+    {{ typographyDescription(token) }}
 {[ elseif isDimensionToken(token.tokenType) ]}
-    {{ measureValueToReadableUnit(token.value, showReferences) }}
+    {{ measureValueToReadableUnit(token.value, false) }}
 {[ elseif isStringToken(token.tokenType) ]}
-    {[ if showReferences ]}
-        {[ const textRef = getTextTokenReference(token.value) /]}
-        {[ if textRef ]}
-            {{ token.value.text }} <span class="token-reference">({{ textRef }})</span>
-        {[ else ]}
-            {{ token.value.text }}
-        {[/]}
-    {[ else ]}
-        {{ token.value.text }}
-    {[/]}
+    {{ token.value.text }}
 {[ elseif token.tokenType.equals("Opacity") ]}
     {{ decimalOpacityToPercentage(token.value) }}
 {[ else ]}
