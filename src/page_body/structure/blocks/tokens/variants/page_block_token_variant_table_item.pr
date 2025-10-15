@@ -53,11 +53,22 @@
                             {[/]}
                         {[/]}
                     </div>
-                {[ elseif shouldShowTokenReferences(token) ]}
+                {[ else ]}
                     {* Single theme or no themes - show complex token references *}
-                    <div class="token-references">
-                        {{ getTokenReferenceList(token) }}
-                    </div>
+                    {[ if token.tokenType.equals("Typography") ]}
+                        {* Always show typography references if they exist *}
+                        {[ const typographyRefs = getTokenReferenceList(token) /]}
+                        {[ if typographyRefs && typographyRefs.length > 0 ]}
+                            <div class="token-references">
+                                {{ typographyRefs }}
+                            </div>
+                        {[/]}
+                    {[ elseif shouldShowTokenReferences(token) ]}
+                        {* Other token types *}
+                        <div class="token-references">
+                            {{ getTokenReferenceList(token) }}
+                        </div>
+                    {[/]}
                 {[/]}
             {[/]}
             

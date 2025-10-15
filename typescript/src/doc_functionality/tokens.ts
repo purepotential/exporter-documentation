@@ -952,6 +952,17 @@ export function getThemedTokenReference(token: Token, themes: any[], ds?: any): 
   if (token.tokenType === "Color") {
     const colorToken = token as ColorToken
     reference = getColorTokenReference(colorToken.value, ds) || ""
+  } else if (token.tokenType === "Typography") {
+    const typographyToken = token as TypographyToken
+    const typographyRefs = getTypographyTokenReferences(typographyToken)
+    if (typographyRefs.length > 0) {
+      // For themed references, show a summary instead of all details
+      if (typographyRefs.length === 1) {
+        reference = typographyRefs[0]
+      } else {
+        reference = `${typographyRefs.length} references`
+      }
+    }
   } else if (isDimensionToken(token.tokenType)) {
     const measureToken = token as MeasureToken
     reference = getMeasureTokenReference(measureToken.value, ds) || ""
