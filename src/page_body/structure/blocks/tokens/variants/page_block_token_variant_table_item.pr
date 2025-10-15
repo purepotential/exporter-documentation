@@ -40,10 +40,25 @@
             {[ const configuration = exportConfiguration() /]}
             {[ const showReferences = configuration.blockConfigTokensShowReferences /]}
             
-            {[ if showReferences && shouldShowTokenReferences(token) ]}
-                <div class="token-references">
-                    {{ getTokenReferenceList(token) }}
-                </div>
+            {[ if showReferences ]}
+                {[ if (block.swatches && block.swatches.length > 1) ]}
+                    {* Multiple themes - show themed references *}
+                    <div class="token-references themed-references">
+                        {[ for swatch in block.swatches ]}
+                            {[ const themedToken = ds.tokensByApplyingThemes([token.id], swatch.selectedThemeIds) /]}
+                            {[ const themes = ds.themesByIds(swatch.selectedThemeIds) /]}
+                            {[ const themedRef = getThemedTokenReference(themedToken[0], themes, ds) /]}
+                            {[ if themedRef ]}
+                                <div class="themed-reference-item">{{ themedRef }}</div>
+                            {[/]}
+                        {[/]}
+                    </div>
+                {[ elseif shouldShowTokenReferences(token) ]}
+                    {* Single theme or no themes - show complex token references *}
+                    <div class="token-references">
+                        {{ getTokenReferenceList(token) }}
+                    </div>
+                {[/]}
             {[/]}
             
             {[ if token.description ]}
