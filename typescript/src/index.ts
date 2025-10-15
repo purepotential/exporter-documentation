@@ -79,7 +79,26 @@ import {
   parseTokenIds,
   getTokensFromIds,
   buildThemeLabel,
-  getThemedTokenReference
+  getThemedTokenReference,
+  // New complex token display functions
+  displayTokenWithReferences,
+  displayTokenValue,
+  displayTypographyTokenWithReferences,
+  displayShadowTokenWithReferences,
+  displayGradientTokenWithReferences,
+  displayColorTokenWithReferences,
+  displayDimensionTokenWithReferences,
+  displayStringTokenWithReferences,
+  getTypographyTokenReferences,
+  getShadowTokenReferences,
+  getGradientTokenReferences,
+  getTokenReferenceSummary,
+  getTokenReferenceDetails,
+  tokenHasReferences,
+  formatTokenReferenceDetailsAsHtml,
+  displayTokenWithReferenceBadges,
+  displayTokenWithReferenceItems,
+  getTokenReferenceCount
 } from './doc_functionality/tokens';
 import {
   assetUrl,
@@ -254,6 +273,26 @@ Pulsar.registerFunction('parseTokenIds', parseTokenIds);
 Pulsar.registerFunction('getTokensFromIds', getTokensFromIds);
 Pulsar.registerFunction('buildThemeLabel', buildThemeLabel);
 Pulsar.registerFunction('getThemedTokenReference', getThemedTokenReference);
+
+/* New complex token display functions */
+Pulsar.registerFunction('displayTokenWithReferences', displayTokenWithReferences);
+Pulsar.registerFunction('displayTokenValue', displayTokenValue);
+Pulsar.registerFunction('displayTypographyTokenWithReferences', displayTypographyTokenWithReferences);
+Pulsar.registerFunction('displayShadowTokenWithReferences', displayShadowTokenWithReferences);
+Pulsar.registerFunction('displayGradientTokenWithReferences', displayGradientTokenWithReferences);
+Pulsar.registerFunction('displayColorTokenWithReferences', displayColorTokenWithReferences);
+Pulsar.registerFunction('displayDimensionTokenWithReferences', displayDimensionTokenWithReferences);
+Pulsar.registerFunction('displayStringTokenWithReferences', displayStringTokenWithReferences);
+Pulsar.registerFunction('getTypographyTokenReferences', getTypographyTokenReferences);
+Pulsar.registerFunction('getShadowTokenReferences', getShadowTokenReferences);
+Pulsar.registerFunction('getGradientTokenReferences', getGradientTokenReferences);
+Pulsar.registerFunction('getTokenReferenceSummary', getTokenReferenceSummary);
+Pulsar.registerFunction('getTokenReferenceDetails', getTokenReferenceDetails);
+Pulsar.registerFunction('tokenHasReferences', tokenHasReferences);
+Pulsar.registerFunction('formatTokenReferenceDetailsAsHtml', formatTokenReferenceDetailsAsHtml);
+Pulsar.registerFunction('displayTokenWithReferenceBadges', displayTokenWithReferenceBadges);
+Pulsar.registerFunction('displayTokenWithReferenceItems', displayTokenWithReferenceItems);
+Pulsar.registerFunction('getTokenReferenceCount', getTokenReferenceCount);
 
 /* Markdown */
 Pulsar.registerFunction('markdownToHTML', markdownToHTML);
