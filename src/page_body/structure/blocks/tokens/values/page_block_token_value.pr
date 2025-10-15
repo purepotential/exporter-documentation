@@ -1,18 +1,9 @@
 {[ let token = context /]}
+{[ let showReferences = ds.blockConfigTokensShowReferences /]}
 
-{* Basic value display for left column with proper styling *}
-<div class="token-value">
-{[ if token.tokenType.equals("Color") ]}
-    {{ getFormattedColor(token.value, false, null, false) }}
-{[ elseif token.tokenType.equals("Typography") ]}
-    {{ typographyDescription(token) }}
-{[ elseif isDimensionToken(token.tokenType) ]}
-    {{ measureValueToReadableUnit(token.value, false) }}
-{[ elseif isStringToken(token.tokenType) ]}
-    {{ token.value.text }}
-{[ elseif token.tokenType.equals("Opacity") ]}
-    {{ decimalOpacityToPercentage(token.value) }}
+{* Display token with or without references using helper functions *}
+{[ if showReferences ]}
+    {{{ displayTokenWithReferences(token, true) }}}
 {[ else ]}
-    {{ token.value }}
+    <div class="token-value">{{ displayTokenValue(token) }}</div>
 {[/]}
-</div>

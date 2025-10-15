@@ -43,15 +43,8 @@
                             <td>{[ inject "page_block_token_value" context token /]}</td>
                             {[ if showReferences ]}
                                 <td>
-                                    {[ if token.tokenType.equals("Color") ]}
-                                        Base token
-                                    {[ elseif isDimensionToken(token.tokenType) ]}
-                                        Base token
-                                    {[ elseif isStringToken(token.tokenType) ]}
-                                        Base token
-                                    {[ else ]}
-                                        —
-                                    {[/]}
+                                    {{ getTokenReferenceSummary(token) }}
+                                    {{{ formatTokenReferenceDetailsAsHtml(token) }}}
                                 </td>
                             {[/]}
                         </tr>
@@ -67,7 +60,10 @@
                         <p><strong>Type:</strong> {{ token.tokenType }}</p>
                         <p><strong>Value:</strong> {[ inject "page_block_token_value" context token /]}</p>
                         {[ if showReferences ]}
-                            <p><strong>Reference:</strong> Base token</p>
+                            <div class="reference-section">
+                                <strong>References:</strong>
+                                {{{ displayTokenWithReferenceBadges(token) }}}
+                            </div>
                         {[/]}
                     </div>
                 {[/]}
@@ -81,7 +77,9 @@
                         <span class="token-name">{{ token.name }}</span>
                         <span class="token-value">{[ inject "page_block_token_value" context token /]}</span>
                         {[ if showReferences ]}
-                            <span class="token-reference">→ Base</span>
+                            <div class="stack-references">
+                                {{{ displayTokenWithReferenceItems(token) }}}
+                            </div>
                         {[/]}
                     </div>
                 {[/]}

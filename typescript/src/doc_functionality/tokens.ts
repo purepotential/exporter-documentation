@@ -936,7 +936,7 @@ export function buildThemeLabel(themes: any[]): string {
   if (!themes || themes.length === 0) {
     return ""
   }
-  
+
   return themes.map(theme => theme.name).join(", ")
 }
 
@@ -945,10 +945,10 @@ export function getThemedTokenReference(token: Token, themes: any[], ds?: any): 
   if (!token) {
     return ""
   }
-  
+
   // Get the reference based on token type
   let reference = ""
-  
+
   if (token.tokenType === "Color") {
     const colorToken = token as ColorToken
     reference = getColorTokenReference(colorToken.value, ds) || ""
@@ -959,16 +959,319 @@ export function getThemedTokenReference(token: Token, themes: any[], ds?: any): 
     const textToken = token as TextToken
     reference = getTextTokenReference(textToken.value, ds) || ""
   }
-  
+
   if (!reference) {
     return ""
   }
-  
+
   // If we have themes, add the theme label
   if (themes && themes.length > 0) {
     const themeLabel = buildThemeLabel(themes)
     return `${themeLabel}: ${reference}`
   }
-  
+
   return reference
+}
+
+// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+// MARK: - Complex Token Display with References
+
+/** Display any token with its resolved value and references in HTML format */
+export function displayTokenWithReferences(token: Token, showReferences: boolean = true): string {
+  if (!showReferences) {
+    return displayTokenValue(token)
+  }
+
+  switch (token.tokenType) {
+    case "Typography":
+      return displayTypographyTokenWithReferences(token as TypographyToken)
+    case "Shadow":
+      return displayShadowTokenWithReferences(token as ShadowToken)
+    case "Gradient":
+      return displayGradientTokenWithReferences(token as GradientToken)
+    case "Color":
+      return displayColorTokenWithReferences(token as ColorToken)
+    default:
+      if (isDimensionToken(token.tokenType)) {
+        return displayDimensionTokenWithReferences(token as MeasureToken)
+      } else if (isStringToken(token.tokenType)) {
+        return displayStringTokenWithReferences(token as TextToken)
+      }
+      return displayTokenValue(token)
+  }
+}
+
+/** Display basic token value without references */
+export function displayTokenValue(token: Token): string {
+  switch (token.tokenType) {
+    case "Color":
+      return getFormattedColor((token as ColorToken).value, false, null, false)
+    case "Typography":
+      return typographyDescription(token as TypographyToken)
+    case "Shadow":
+      return shadowDescription(token as ShadowToken)
+    case "Gradient":
+      return gradientDescription(token as GradientToken)
+    case "Opacity":
+      return decimalOpacityToPercentage((token as MeasureToken).value)
+    default:
+      if (isDimensionToken(token.tokenType)) {
+        return measureValueToReadableUnit((token as MeasureToken).value, false)
+      } else if (isStringToken(token.tokenType)) {
+        return (token as TextToken).value.text
+      }
+      return String((token as any).value || "")
+  }
+}
+
+/** Display typography token with references */
+export function displayTypographyTokenWithReferences(token: TypographyToken): string {
+  const mainValue = typographyDescription(token)
+  const references = getTypographyTokenReferences(token)
+
+  if (references.length === 0) {
+    return `<div class="typography-token">
+      <div class="typography-main">${mainValue}</div>
+    </div>`
+  }
+
+  const referencesHtml = references.map(ref =>
+    `<span class="ref-item">${ref}</span>`
+  ).join('')
+
+  return `<div class="typography-token">
+    <div class="typography-main">${mainValue}</div>
+    <div class="typography-references">${referencesHtml}</div>
+  </div>`
+}
+
+/** Display shadow token with references */
+export function displayShadowTokenWithReferences(token: ShadowToken): string {
+  const mainValue = shadowDescription(token)
+  const references = getShadowTokenReferences(token)
+
+  if (references.length === 0) {
+    return `<div class="shadow-token">
+      <div class="shadow-main">${mainValue}</div>
+    </div>`
+  }
+
+  const referencesHtml = references.map(ref =>
+    `<span class="ref-item">${ref}</span>`
+  ).join('')
+
+  return `<div class="shadow-token">
+    <div class="shadow-main">${mainValue}</div>
+    <div class="shadow-references">${referencesHtml}</div>
+  </div>`
+}
+
+/** Display gradient token with references */
+export function displayGradientTokenWithReferences(token: GradientToken): string {
+  const mainValue = gradientDescription(token)
+  const references = getGradientTokenReferences(token)
+
+  if (references.length === 0) {
+    return `<div class="gradient-token">
+      <div class="gradient-main">${mainValue}</div>
+    </div>`
+  }
+
+  const referencesHtml = references.map(ref =>
+    `<span class="ref-item">${ref}</span>`
+  ).join('')
+
+  return `<div class="gradient-token">
+    <div class="gradient-main">${mainValue}</div>
+    <div class="gradient-references">${referencesHtml}</div>
+  </div>`
+}
+
+/** Display color token with references */
+export function displayColorTokenWithReferences(token: ColorToken): string {
+  return getFormattedColor(token.value, false, null, true)
+}
+
+/** Display dimension token with references */
+export function displayDimensionTokenWithReferences(token: MeasureToken): string {
+  return measureValueToReadableUnit(token.value, true)
+}
+
+/** Display string token with references */
+export function displayStringTokenWithReferences(token: TextToken): string {
+  const textRef = getTextTokenReference(token.value)
+  if (textRef) {
+    return `${token.value.text} <span class="token-reference">(${textRef})</span>`
+  }
+  return token.value.text
+}
+
+/** Get all references from a typography token */
+export function getTypographyTokenReferences(token: TypographyToken): string[] {
+  const references: string[] = []
+
+  const fontFamilyRef = getTextTokenReference(token.value.fontFamily)
+  if (fontFamilyRef) {
+    references.push(`Font: ${fontFamilyRef}`)
+  }
+
+  const fontWeightRef = getTextTokenReference(token.value.fontWeight)
+  if (fontWeightRef) {
+    references.push(`Weight: ${fontWeightRef}`)
+  }
+
+  const fontSizeRef = getMeasureTokenReference(token.value.fontSize)
+  if (fontSizeRef) {
+    references.push(`Size: ${fontSizeRef}`)
+  }
+
+  if (token.value.lineHeight) {
+    const lineHeightRef = getMeasureTokenReference(token.value.lineHeight)
+    if (lineHeightRef) {
+      references.push(`Line Height: ${lineHeightRef}`)
+    }
+  }
+
+  const letterSpacingRef = getMeasureTokenReference(token.value.letterSpacing)
+  if (letterSpacingRef) {
+    references.push(`Letter Spacing: ${letterSpacingRef}`)
+  }
+
+  const paragraphSpacingRef = getMeasureTokenReference(token.value.paragraphSpacing)
+  if (paragraphSpacingRef) {
+    references.push(`Paragraph Spacing: ${paragraphSpacingRef}`)
+  }
+
+  return references
+}
+
+/** Get all references from a shadow token */
+export function getShadowTokenReferences(token: ShadowToken): string[] {
+  const references: string[] = []
+
+  token.value.forEach((shadowValue, index) => {
+    const colorRef = getColorTokenReference(shadowValue.color)
+    if (colorRef) {
+      references.push(`Shadow ${index + 1} Color: ${colorRef}`)
+    }
+  })
+
+  return references
+}
+
+/** Get all references from a gradient token */
+export function getGradientTokenReferences(token: GradientToken): string[] {
+  const references: string[] = []
+
+  token.value.forEach(gradientValue => {
+    gradientValue.stops.forEach(stop => {
+      const colorRef = getColorTokenReference(stop.color)
+      if (colorRef) {
+        references.push(`Stop Color: ${colorRef}`)
+      }
+    })
+  })
+
+  return references
+}
+
+/** Get reference summary for any token type */
+export function getTokenReferenceSummary(token: Token): string {
+  switch (token.tokenType) {
+    case "Color":
+      const colorRef = getColorTokenReference((token as ColorToken).value)
+      return colorRef || "Base token"
+
+    case "Typography":
+      const typographyRefs = getTypographyTokenReferences(token as TypographyToken)
+      if (typographyRefs.length === 0) return "Base token"
+      if (typographyRefs.length === 1) return typographyRefs[0]
+      return `${typographyRefs.length} references`
+
+    case "Shadow":
+      const shadowRefs = getShadowTokenReferences(token as ShadowToken)
+      if (shadowRefs.length === 0) return "Base token"
+      return `${shadowRefs.length} color reference${shadowRefs.length !== 1 ? 's' : ''}`
+
+    case "Gradient":
+      const gradientRefs = getGradientTokenReferences(token as GradientToken)
+      if (gradientRefs.length === 0) return "Base token"
+      return `${gradientRefs.length} color reference${gradientRefs.length !== 1 ? 's' : ''}`
+
+    default:
+      if (isDimensionToken(token.tokenType)) {
+        const measureRef = getMeasureTokenReference((token as MeasureToken).value)
+        return measureRef || "Base token"
+      } else if (isStringToken(token.tokenType)) {
+        const textRef = getTextTokenReference((token as TextToken).value)
+        return textRef || "Base token"
+      }
+      return "—"
+  }
+}
+
+/** Get detailed reference list for complex tokens */
+export function getTokenReferenceDetails(token: Token): string[] {
+  switch (token.tokenType) {
+    case "Typography":
+      return getTypographyTokenReferences(token as TypographyToken)
+    case "Shadow":
+      return getShadowTokenReferences(token as ShadowToken)
+    case "Gradient":
+      return getGradientTokenReferences(token as GradientToken)
+    default:
+      const summary = getTokenReferenceSummary(token)
+      return summary === "Base token" || summary === "—" ? [] : [summary]
+  }
+}
+
+/** Check if token has any references */
+export function tokenHasReferences(token: Token): boolean {
+  return getTokenReferenceDetails(token).length > 0
+}
+
+/** Format reference details as HTML list */
+export function formatTokenReferenceDetailsAsHtml(token: Token): string {
+  const details = getTokenReferenceDetails(token)
+  if (details.length === 0) return ""
+
+  if (details.length === 1) {
+    return `<div class="reference-item">${details[0]}</div>`
+  }
+
+  const listItems = details.map(detail => `<div class="reference-item">${detail}</div>`).join('')
+  return `<div class="reference-details">${listItems}</div>`
+}
+
+/** Get reference count for a token */
+export function getTokenReferenceCount(token: Token): number {
+  return getTokenReferenceDetails(token).length
+}
+
+/** Display token with reference badges for grid/card layouts */
+export function displayTokenWithReferenceBadges(token: Token): string {
+  const details = getTokenReferenceDetails(token)
+  if (details.length === 0) {
+    return '<div class="reference-badge">Base token</div>'
+  }
+
+  const badges = details.map(detail =>
+    `<div class="reference-badge small">${detail}</div>`
+  ).join('')
+
+  return `<div class="reference-badges">${badges}</div>`
+}
+
+/** Display token with reference items for stack layouts */
+export function displayTokenWithReferenceItems(token: Token): string {
+  const details = getTokenReferenceDetails(token)
+  if (details.length === 0) {
+    return '<span class="reference-item">Base</span>'
+  }
+
+  const items = details.map(detail =>
+    `<span class="reference-item">${detail}</span>`
+  ).join('')
+
+  return `<div class="reference-list">${items}</div>`
 }
