@@ -47,9 +47,21 @@
                         {[ for swatch in block.swatches ]}
                             {[ const themedToken = ds.tokensByApplyingThemes([token.id], swatch.selectedThemeIds) /]}
                             {[ const themes = ds.themesByIds(swatch.selectedThemeIds) /]}
-                            {[ const themedRef = getThemedTokenReference(themedToken[0], themes, ds) /]}
-                            {[ if themedRef ]}
-                                <div class="themed-reference-item">{{ themedRef }}</div>
+                            {[ if themedToken[0].tokenType.equals("Typography") ]}
+                                {* Typography tokens - show detailed references *}
+                                {[ const typographyRefs = getTokenReferenceDetails(themedToken[0]) /]}
+                                {[ if typographyRefs.length > 0 ]}
+                                    {[ const themeLabel = buildThemeLabel(themes) /]}
+                                    {[ for ref in typographyRefs ]}
+                                        <div class="themed-reference-item">{{ themeLabel }}: {{ ref }}</div>
+                                    {[/]}
+                                {[/]}
+                            {[ else ]}
+                                {* Other token types - use existing logic *}
+                                {[ const themedRef = getThemedTokenReference(themedToken[0], themes, ds) /]}
+                                {[ if themedRef ]}
+                                    <div class="themed-reference-item">{{ themedRef }}</div>
+                                {[/]}
                             {[/]}
                         {[/]}
                     </div>

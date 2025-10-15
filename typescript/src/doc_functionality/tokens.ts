@@ -956,7 +956,7 @@ export function getThemedTokenReference(token: Token, themes: any[], ds?: any): 
     const typographyToken = token as TypographyToken
     const typographyRefs = getTypographyTokenReferences(typographyToken)
     if (typographyRefs.length > 0) {
-      // For themed references, show a summary instead of all details
+      // For themed references, show a summary (detailed handling is in template)
       if (typographyRefs.length === 1) {
         reference = typographyRefs[0]
       } else {
