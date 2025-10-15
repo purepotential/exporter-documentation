@@ -1,5 +1,6 @@
 {[ let token = context /]}
-{[ let showReferences = ds.blockConfigTokensShowReferences /]}
+{[ let configuration = exportConfiguration() /]}
+{[ let showReferences = configuration.blockConfigTokensShowReferences /]}
 
 {* Display token with or without references using helper functions *}
 {[ if showReferences ]}
