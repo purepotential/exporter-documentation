@@ -44,7 +44,7 @@
                             {[ if showReferences ]}
                                 <td>
                                     {{ getTokenReferenceSummary(token) }}
-                                    {{{ formatTokenReferenceDetailsAsHtml(token) }}}
+                                    {{ formatTokenReferenceDetailsAsHtml(token) }}
                                 </td>
                             {[/]}
                         </tr>
@@ -62,7 +62,7 @@
                         {[ if showReferences ]}
                             <div class="reference-section">
                                 <strong>References:</strong>
-                                {{{ displayTokenWithReferenceBadges(token) }}}
+                                {{ displayTokenWithReferenceBadges(token) }}
                             </div>
                         {[/]}
                     </div>
@@ -78,7 +78,7 @@
                         <span class="token-value">{[ inject "page_block_token_value" context token /]}</span>
                         {[ if showReferences ]}
                             <div class="stack-references">
-                                {{{ displayTokenWithReferenceItems(token) }}}
+                                {{ displayTokenWithReferenceItems(token) }}
                             </div>
                         {[/]}
                     </div>

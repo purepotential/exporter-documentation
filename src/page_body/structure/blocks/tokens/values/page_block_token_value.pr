@@ -3,7 +3,7 @@
 
 {* Display token with or without references using helper functions *}
 {[ if showReferences ]}
-    {{{ displayTokenWithReferences(token, true) }}}
+    {{ displayTokenWithReferences(token, true) }}
 {[ else ]}
     <div class="token-value">{{ displayTokenValue(token) }}</div>
 {[/]}
