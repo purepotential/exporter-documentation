@@ -913,4 +913,86 @@
       }
     }
   }
+}/* Token R
+eference Layout Styles */
+.token-references {
+  margin-top: 8px;
+}
+
+.token-reference-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.token-reference-item {
+  font-size: var(--fontSizeTiny);
+  font-family: var(--fontFamilyCode);
+  color: var(--colorInkSecondary);
+  background-color: var(--colorBackgroundSecondary);
+  padding: 2px 6px;
+  border-radius: var(--borderRadiusSmall);
+  border-left: 2px solid var(--colorAccent);
+  line-height: 1.3;
+}
+
+.token-reference-item:hover {
+  background-color: var(--colorBackgroundTertiary);
+  color: var(--colorInkPrimary);
+}
+
+/* Enhanced token value styling for below-swatch display */
+.preview .token-value {
+  font-size: var(--fontSizeTiny);
+  font-family: var(--fontFamilyCode);
+  color: var(--colorInkSecondary);
+  margin-top: 4px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Typography token specific styling */
+.token-reference-item[data-ref-type="typography"] {
+  border-left-color: var(--colorSuccess);
+}
+
+.token-reference-item[data-ref-type="color"] {
+  border-left-color: var(--colorAccent);
+}
+
+.token-reference-item[data-ref-type="dimension"] {
+  border-left-color: var(--colorWarning);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .token-reference-list {
+    gap: 2px;
+  }
+  
+  .token-reference-item {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+  
+  .preview .token-value {
+    font-size: 10px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .token-reference-item {
+    background-color: var(--colorBackgroundSecondaryDark, #2d2d2d);
+    color: var(--colorInkSecondaryDark, #cccccc);
+  }
+  
+  .token-reference-item:hover {
+    background-color: var(--colorBackgroundTertiaryDark, #3d3d3d);
+    color: var(--colorInkPrimaryDark, #ffffff);
+  }
+  
+  .preview .token-value {
+    color: var(--colorInkSecondaryDark, #cccccc);
+  }
 }

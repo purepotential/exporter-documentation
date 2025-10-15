@@ -1275,3 +1275,62 @@ export function displayTokenWithReferenceItems(token: Token): string {
 
   return `<div class="reference-list">${items}</div>`
 }
+
+// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+// MARK: - Layout-Specific Token Display Functions
+
+/** Get just the resolved value for display below swatch */
+export function getTokenResolvedValue(token: Token): string {
+  switch (token.tokenType) {
+    case "Color":
+      return getFormattedColor((token as ColorToken).value, false, null, false)
+    case "Typography":
+      return typographyDescription(token as TypographyToken)
+    case "Shadow":
+      return shadowDescription(token as ShadowToken)
+    case "Gradient":
+      return gradientDescription(token as GradientToken)
+    case "Opacity":
+      return decimalOpacityToPercentage((token as MeasureToken).value)
+    default:
+      if (isDimensionToken(token.tokenType)) {
+        return measureValueToReadableUnit((token as MeasureToken).value, false)
+      } else if (isStringToken(token.tokenType)) {
+        return (token as TextToken).value.text
+      }
+      return String((token as any).value || "")
+  }
+}
+
+/** Get formatted reference list for info column */
+export function getTokenReferenceList(token: Token): string {
+  const references = getTokenReferenceDetails(token)
+  if (references.length === 0) {
+    return ""
+  }
+
+  if (references.length === 1) {
+    return `<div class="token-reference-item">${references[0]}</div>`
+  }
+
+  const items = references.map(ref => 
+    `<div class="token-reference-item">${ref}</div>`
+  ).join('')
+  
+  return `<div class="token-reference-list">${items}</div>`
+}
+
+/** Get simple reference summary for single line display */
+export function getTokenReferenceSimple(token: Token): string {
+  const summary = getTokenReferenceSummary(token)
+  if (summary === "Base token" || summary === "—") {
+    return ""
+  }
+  return summary
+}
+
+/** Check if token has any references to display */
+export function shouldShowTokenReferences(token: Token): boolean {
+  const summary = getTokenReferenceSummary(token)
+  return summary !== "Base token" && summary !== "—" && summary.length > 0
+}

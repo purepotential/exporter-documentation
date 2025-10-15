@@ -98,7 +98,12 @@ import {
   formatTokenReferenceDetailsAsHtml,
   displayTokenWithReferenceBadges,
   displayTokenWithReferenceItems,
-  getTokenReferenceCount
+  getTokenReferenceCount,
+  // Layout-specific functions
+  getTokenResolvedValue,
+  getTokenReferenceList,
+  getTokenReferenceSimple,
+  shouldShowTokenReferences
 } from './doc_functionality/tokens';
 import {
   assetUrl,
@@ -293,6 +298,12 @@ Pulsar.registerFunction('formatTokenReferenceDetailsAsHtml', formatTokenReferenc
 Pulsar.registerFunction('displayTokenWithReferenceBadges', displayTokenWithReferenceBadges);
 Pulsar.registerFunction('displayTokenWithReferenceItems', displayTokenWithReferenceItems);
 Pulsar.registerFunction('getTokenReferenceCount', getTokenReferenceCount);
+
+/* Layout-specific token display functions */
+Pulsar.registerFunction('getTokenResolvedValue', getTokenResolvedValue);
+Pulsar.registerFunction('getTokenReferenceList', getTokenReferenceList);
+Pulsar.registerFunction('getTokenReferenceSimple', getTokenReferenceSimple);
+Pulsar.registerFunction('shouldShowTokenReferences', shouldShowTokenReferences);
 
 /* Markdown */
 Pulsar.registerFunction('markdownToHTML', markdownToHTML);

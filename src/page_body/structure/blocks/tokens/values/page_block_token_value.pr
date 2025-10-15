@@ -1,10 +1,4 @@
 {[ let token = context /]}
-{[ let configuration = exportConfiguration() /]}
-{[ let showReferences = configuration.blockConfigTokensShowReferences /]}
 
-{* Display token with or without references using helper functions *}
-{[ if showReferences ]}
-    {{ displayTokenWithReferences(token, true) }}
-{[ else ]}
-    <div class="token-value">{{ displayTokenValue(token) }}</div>
-{[/]}
+{* Display only the resolved value for below-swatch display *}
+<div class="token-value">{{ getTokenResolvedValue(token) }}</div>
