@@ -21,7 +21,7 @@ Dodano nową opcję konfiguracyjną w kategorii "Blocks":
 }
 ```
 
-**Domyślnie wyłączona** - użytkownik musi ją włączyć w ustawieniach exportera.
+**Domyślnie włączona** - użytkownik może ją wyłączyć w ustawieniach exportera, jeśli nie chce tej funkcjonalności.
 
 ### 2. Funkcja pomocnicza TypeScript
 
@@ -108,11 +108,13 @@ Efekt:
 
 ## Jak używać
 
+Funkcjonalność jest **domyślnie włączona**. Po opublikowaniu dokumentacji, kliknięcie na obrazek frame'a otworzy go w Figmie.
+
+Jeśli chcesz wyłączyć tę funkcjonalność:
 1. W ustawieniach exportera przejdź do kategorii "Blocks"
 2. Znajdź opcję "Frame blocks: Link to Figma"
-3. Włącz opcję (checkbox)
-4. Opublikuj dokumentację
-5. Kliknięcie na obrazek frame'a otworzy go w Figmie
+3. Wyłącz opcję (uncheckbox)
+4. Opublikuj dokumentację ponownie
 
 ## Bezpieczeństwo
 
