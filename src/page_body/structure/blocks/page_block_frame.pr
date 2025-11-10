@@ -17,9 +17,12 @@
 <div class="tile-item frame-item{{ !context.showTitles ? "titleless" : "" }}">      
     <div class="preview frame {{ showChecker ? "checkered-background-light" : ""}}" style="background-color: {{ backgroundColor }}">
     <!-- DEBUG: linkToFigma={{ linkToFigma }} -->
-    <!-- DEBUG: frame.sourceFileId={{ frame.sourceFileId }}, frame.sourceFrameId={{ frame.sourceFrameId }} -->
-    {[ if block ]}
-    <!-- DEBUG: block.sourceFileId={{ block.sourceFileId }}, block.sourceFrameId={{ block.sourceFrameId }} -->
+    <!-- DEBUG: frame.asset={{ frame.asset ? "exists" : "undefined" }} -->
+    {[ if frame.asset ]}
+    <!-- DEBUG: frame.asset.type={{ frame.asset.type }} -->
+    {[ if frame.asset.origin ]}
+    <!-- DEBUG: frame.asset.origin.fileId={{ frame.asset.origin.fileId }}, nodeId={{ frame.asset.origin.nodeId }} -->
+    {[/]}
     {[/]}
     {[ if frame.previewUrl ]}
         {[ if (linkToFigma && frame.sourceFileId && frame.sourceFrameId) ]}
