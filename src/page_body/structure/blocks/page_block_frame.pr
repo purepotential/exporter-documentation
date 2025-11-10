@@ -9,10 +9,19 @@
     {[ showChecker = false /]}
 {[/]}
 
+{* Check if Figma linking is enabled *}
+{[ let linkToFigma = configuration.blockConfigFramesLinkToFigma /]}
+
 <div class="tile-item frame-item{{ !context.showTitles ? "titleless" : "" }}">      
     <div class="preview frame {{ showChecker ? "checkered-background-light" : ""}}" style="background-color: {{ backgroundColor }}">
     {[ if frame.previewUrl ]}
-        <img src="{{ frame.previewUrl }}" alt="{{ frame.title }}" height="{{ frame.origin.height }}" width="{{ frame.origin.width }}" />
+        {[ if (linkToFigma && frame.sourceFileId && frame.sourceFrameId) ]}
+            <a href="{{ getFigmaFrameUrl(frame.sourceFileId, frame.sourceFrameId) }}" target="_blank" rel="noopener noreferrer" title="Open in Figma">
+                <img src="{{ frame.previewUrl }}" alt="{{ frame.title }}" height="{{ frame.origin.height }}" width="{{ frame.origin.width }}" />
+            </a>
+        {[ else ]}
+            <img src="{{ frame.previewUrl }}" alt="{{ frame.title }}" height="{{ frame.origin.height }}" width="{{ frame.origin.width }}" />
+        {[/]}
     {[/]}
     
     </div>

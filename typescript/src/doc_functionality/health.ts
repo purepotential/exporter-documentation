@@ -82,3 +82,9 @@ export function getFigmaFileUrl(designComponent: DesignComponentOrigin)
 {
     return "https://www.figma.com/file/" + designComponent.fileId + "?node-id=" + designComponent.nodeId;
 }
+
+// Get Figma URL for a frame
+export function getFigmaFrameUrl(fileId: string, frameId: string)
+{
+    return "https://www.figma.com/file/" + fileId + "?node-id=" + encodeURIComponent(frameId);
+}
