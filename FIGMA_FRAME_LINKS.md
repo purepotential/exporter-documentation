@@ -51,11 +51,15 @@ Funkcja generuje poprawny URL do Figmy na podstawie:
 **Plik:** `src/page_body/structure/blocks/page_block_frame.pr`
 
 Zmodyfikowano template, aby:
+- Pobierać konfigurację przez `exportConfiguration()`
 - Sprawdzać, czy opcja `blockConfigFramesLinkToFigma` jest włączona
 - Sprawdzać, czy frame ma wymagane dane (`sourceFileId` i `sourceFrameId`)
 - Owijać `<img>` w `<a>` tag z linkiem do Figmy, gdy warunki są spełnione
 
 ```html
+{[ const configuration = exportConfiguration() /]}
+{[ let linkToFigma = configuration.blockConfigFramesLinkToFigma /]}
+
 {[ if (linkToFigma && frame.sourceFileId && frame.sourceFrameId) ]}
     <a href="{{ getFigmaFrameUrl(frame.sourceFileId, frame.sourceFrameId) }}" 
        target="_blank" 

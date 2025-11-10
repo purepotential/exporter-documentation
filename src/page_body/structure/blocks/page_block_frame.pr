@@ -10,6 +10,7 @@
 {[/]}
 
 {* Check if Figma linking is enabled *}
+{[ const configuration = exportConfiguration() /]}
 {[ let linkToFigma = configuration.blockConfigFramesLinkToFigma /]}
 
 <div class="tile-item frame-item{{ !context.showTitles ? "titleless" : "" }}">      
