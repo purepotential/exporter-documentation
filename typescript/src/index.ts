@@ -10,6 +10,7 @@ import {
 import {
   convertHealthTagIfAny,
   getFigmaFileUrl,
+  extractFigmaUrl,
   sortComponentsAlphabetically
 } from './doc_functionality/health';
 import {
@@ -315,6 +316,7 @@ Pulsar.registerFunction(
   sortComponentsAlphabetically
 );
 Pulsar.registerFunction('getFigmaFileUrl', getFigmaFileUrl);
+Pulsar.registerFunction('extractFigmaUrl', extractFigmaUrl);
 
 /* Sandbox */
 Pulsar.registerFunction('htmlSafeString', htmlSafeString);

@@ -83,4 +83,18 @@ export function getFigmaFileUrl(designComponent: DesignComponentOrigin)
     return "https://www.figma.com/file/" + designComponent.fileId + "?node-id=" + designComponent.nodeId;
 }
 
+// Extract Figma URL from text (e.g., frame description)
+export function extractFigmaUrl(text: string | null): string | null
+{
+    if (!text) {
+        return null;
+    }
+    
+    // Look for Figma URL in the text
+    const urlPattern = /https:\/\/www\.figma\.com\/[^\s]+/;
+    const match = text.match(urlPattern);
+    
+    return match ? match[0] : null;
+}
+
 

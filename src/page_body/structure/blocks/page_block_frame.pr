@@ -14,14 +14,10 @@
 {[ const configuration = exportConfiguration() /]}
 {[ let linkToFigma = configuration.blockConfigFramesLinkToFigma /]}
 
-{* Check if description contains Figma URL *}
+{* Extract Figma URL from description if linking is enabled *}
 {[ let figmaUrl = null /]}
-{[ if (linkToFigma && frame.description && frame.description.includes("https://www.figma.com/")) ]}
-    {* Extract Figma URL from description *}
-    {[ const urlMatch = frame.description.match(/https:\/\/www\.figma\.com\/[^\s]+/) /]}
-    {[ if urlMatch ]}
-        {[ figmaUrl = urlMatch[0] /]}
-    {[/]}
+{[ if (linkToFigma && frame.description) ]}
+    {[ figmaUrl = extractFigmaUrl(frame.description) /]}
 {[/]}
 
 <div class="tile-item frame-item{{ !context.showTitles ? "titleless" : "" }}">      
