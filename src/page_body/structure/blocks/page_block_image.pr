@@ -32,19 +32,6 @@
 
 <div class="content-block content-block--image {{ alignClass }}" id="{{ getSearchIDString(block.id) }}">
 {* Add <a class="popup-img" href="{{ block.url }}"> <img> </a> if you want to enable lightbox-functionality *}
-<!-- DEBUG IMAGE: block.asset={{ block.asset ? "exists" : "undefined" }} -->
-{[ if block.asset ]}
-<!-- DEBUG IMAGE: block.asset.type={{ block.asset.type }} -->
-{[ if block.asset.frame ]}
-<!-- DEBUG IMAGE: block.asset.frame.sourceFileId={{ block.asset.frame.sourceFileId }}, sourceFrameId={{ block.asset.frame.sourceFrameId }} -->
-{[ if block.asset.frame.origin ]}
-<!-- DEBUG IMAGE: block.asset.frame.origin.fileId={{ block.asset.frame.origin.fileId }}, nodeId={{ block.asset.frame.origin.nodeId }} -->
-{[/]}
-{[/]}
-{[ if block.asset.origin ]}
-<!-- DEBUG IMAGE: block.asset.origin.fileId={{ block.asset.origin.fileId }}, nodeId={{ block.asset.origin.nodeId }} -->
-{[/]}
-{[/]}
 {[ if (block.asset && block.asset.type === "figmaFrame" && block.asset.frame && block.asset.frame.origin && block.asset.frame.origin.height) ]}
     {[ if ((altText === "" && block.asset.frame.title)) ]}
         {[ altText = block.asset.frame.title /]}

@@ -14,13 +14,21 @@
 {[ const configuration = exportConfiguration() /]}
 {[ let linkToFigma = configuration.blockConfigFramesLinkToFigma /]}
 
+{* Check if description contains Figma URL *}
+{[ let figmaUrl = null /]}
+{[ if (linkToFigma && frame.description && frame.description.includes("https://www.figma.com/")) ]}
+    {* Extract Figma URL from description *}
+    {[ const urlMatch = frame.description.match(/https:\/\/www\.figma\.com\/[^\s]+/) /]}
+    {[ if urlMatch ]}
+        {[ figmaUrl = urlMatch[0] /]}
+    {[/]}
+{[/]}
+
 <div class="tile-item frame-item{{ !context.showTitles ? "titleless" : "" }}">      
     <div class="preview frame {{ showChecker ? "checkered-background-light" : ""}}" style="background-color: {{ backgroundColor }}">
-    <!-- DEBUG: frame.sourceFileId={{ frame.sourceFileId }}, frame.sourceFrameId={{ frame.sourceFrameId }} -->
-    <!-- DEBUG: frame.sourceFileName={{ frame.sourceFileName }} -->
     {[ if frame.previewUrl ]}
-        {[ if (linkToFigma && frame.sourceFileId && frame.sourceFrameId) ]}
-            <a href="{{ getFigmaFrameUrl(frame.sourceFileId, frame.sourceFrameId) }}" target="_blank" rel="noopener noreferrer" title="Open in Figma">
+        {[ if figmaUrl ]}
+            <a href="{{ figmaUrl }}" target="_blank" rel="noopener noreferrer" title="Open in Figma">
                 <img src="{{ frame.previewUrl }}" alt="{{ frame.title }}" height="{{ frame.origin.height }}" width="{{ frame.origin.width }}" />
             </a>
         {[ else ]}

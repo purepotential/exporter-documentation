@@ -6,7 +6,7 @@
   "organization": "Supernova",
   "source_dir": "src",
   "assets_dir": "assets",
-  "version": "5.6.36",
+  "version": "5.6.37",
   "usesBrands": false,
   "config": {
     "sources": "sources.json",
@@ -423,7 +423,7 @@
         "key": "blockConfigFramesLinkToFigma",
         "type": "boolean",
         "label": "Frame blocks: Link to Figma",
-        "description": "When enabled, frame images will be clickable and open the source frame in Figma.",
+        "description": "When enabled, frame images will be clickable and open the source frame in Figma. Add the Figma URL to the frame description in Supernova to enable this feature.",
         "category": "Blocks",
         "default": true
       },
