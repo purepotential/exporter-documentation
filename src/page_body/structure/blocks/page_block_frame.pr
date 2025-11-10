@@ -16,9 +16,8 @@
 
 <div class="tile-item frame-item{{ !context.showTitles ? "titleless" : "" }}">      
     <div class="preview frame {{ showChecker ? "checkered-background-light" : ""}}" style="background-color: {{ backgroundColor }}">
-    <!-- DEBUG: frame.origin.height={{ frame.origin.height }}, width={{ frame.origin.width }} -->
-    <!-- DEBUG: frame.origin.fileId={{ frame.origin.fileId }}, nodeId={{ frame.origin.nodeId }} -->
-    <!-- DEBUG: frame.origin.sourceId={{ frame.origin.sourceId }}, id={{ frame.origin.id }} -->
+    <!-- DEBUG: frame.sourceFileId={{ frame.sourceFileId }}, frame.sourceFrameId={{ frame.sourceFrameId }} -->
+    <!-- DEBUG: frame.sourceFileName={{ frame.sourceFileName }} -->
     {[ if frame.previewUrl ]}
         {[ if (linkToFigma && frame.sourceFileId && frame.sourceFrameId) ]}
             <a href="{{ getFigmaFrameUrl(frame.sourceFileId, frame.sourceFrameId) }}" target="_blank" rel="noopener noreferrer" title="Open in Figma">
